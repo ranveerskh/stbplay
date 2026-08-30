@@ -1,0 +1,71 @@
+name: Build STB PLAY Play Store AAB
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-36" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+
+      - name: Configure release signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.STB_PLAY_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.STB_PLAY_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.STB_PLAY_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.STB_PLAY_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for value in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!value}" ]; then
+              echo "Missing required Play Store signing secret: $value"
+              exit 1
+            fi
+          done
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/stb-play-release.jks"
+          echo "STB_PLAY_KEYSTORE_PATH=$RUNNER_TEMP/stb-play-release.jks" >> "$GITHUB_ENV"
+          echo "STB_PLAY_KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "STB_PLAY_KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "STB_PLAY_KEY_PASSWORD=$KEY_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Verify public legal contacts are configured
+        run: |
+          set -euo pipefail
+          config="app/src/main/java/ca/netplus/stbplay/AppConfig.java"
+          if grep -q 'PRIVACY_POLICY_URL = ""' "$config" \
+            || grep -q 'TERMS_URL = ""' "$config" \
+            || grep -q 'SUPPORT_EMAIL = ""' "$config"; then
+            echo "Configure Privacy Policy, Terms and Support in AppConfig.java before a Play upload."
+            exit 1
+          fi
+
+      - name: Build signed Play Store bundle
+        run: gradle bundlePlayRelease --stacktrace
+
+      - name: Upload signed AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: STB-PLAY-Android-TV-play-release
+          path: app/build/outputs/bundle/playRelease/app-play-release.aab
