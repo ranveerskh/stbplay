@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "**"
+      - "android-tv/**"
 
 permissions:
   contents: read
@@ -12,6 +12,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android-tv
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: STB-PLAY-Android-TV-sideload-debug
-          path: app/build/outputs/apk/sideload/debug/app-sideload-debug.apk
+          path: android-tv/app/build/outputs/apk/sideload/debug/app-sideload-debug.apk
