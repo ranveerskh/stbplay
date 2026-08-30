@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -67,6 +68,7 @@ public final class MainActivity extends android.app.Activity {
     private int PANEL_LIGHT = Color.rgb(23, 40, 58);
     private int GOLD = Color.rgb(233, 185, 87);
     private int GOLD_BRIGHT = Color.rgb(255, 217, 130);
+    private int TEAL = Color.rgb(57, 216, 196);
     private int TEXT = Color.rgb(245, 248, 252);
     private int MUTED = Color.rgb(169, 182, 197);
     private int DANGER = Color.rgb(255, 154, 154);
@@ -212,7 +214,7 @@ public final class MainActivity extends android.app.Activity {
         layout.addView(status, wrapWithTop(16));
         Button connect = actionButton("Save & Connect", GOLD);
         layout.addView(connect, new LinearLayout.LayoutParams(dp(330), dp(58)));
-        TextView version = text("STB PLAY Android TV · native test build 1.6.2", MUTED, 14);
+        TextView version = text("STB PLAY Android TV · native test build 1.6.3", MUTED, 14);
         layout.addView(version, wrapWithTop(20));
         connect.setOnClickListener(view -> {
             String url = portal.getText().toString().trim();
@@ -357,14 +359,20 @@ public final class MainActivity extends android.app.Activity {
 
         LinearLayout header = new LinearLayout(this);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setPadding(dp(8), 0, dp(8), 0);
-        pageTitle = title("STB PLAY", 25);
+        header.setPadding(dp(4), 0, dp(8), 0);
+        ImageView headerLogo = logoImage();
+        header.addView(headerLogo, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        pageTitle = title("STB PLAY", 24);
         LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(0, dp(54), 1f);
+        titleParams.leftMargin = dp(8);
         header.addView(pageTitle, titleParams);
-        pageStatus = text("Android TV", MUTED, 14);
+        pageStatus = text("READY  ·  Android TV", MUTED, 13);
         header.addView(pageStatus, wrap());
         appHeader = header;
         root.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
+        View headerRule = new View(this);
+        headerRule.setBackgroundColor(Color.argb(110, Color.red(TEAL), Color.green(TEAL), Color.blue(TEAL)));
+        root.addView(headerRule, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1)));
 
         LinearLayout body = new LinearLayout(this);
         body.setOrientation(LinearLayout.HORIZONTAL);
@@ -382,15 +390,17 @@ public final class MainActivity extends android.app.Activity {
         brand.addView(brandName, brandNameParams);
         nav.addView(brand, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(66)));
 
-        String[] labels = {"⌂", "▣", "▤", "◷", "♡", "⚙"};
         String[] descriptions = {"Home", "Live TV", "Movies & Series", "Continue Watching", "Favourites", "Settings"};
-        for (int index = 0; index < labels.length; index++) {
-            String label = labels[index];
-            Button button = navButton(label + "  " + ui(descriptions[index]));
-            button.setTextSize(sp(16));
-            button.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-            button.setPadding(dp(12), 0, dp(8), 0);
-            button.setContentDescription(descriptions[index]);
+        int[] icons = {
+                ca.netplus.stbplay.R.drawable.ic_nav_home,
+                ca.netplus.stbplay.R.drawable.ic_nav_live,
+                ca.netplus.stbplay.R.drawable.ic_nav_movies,
+                ca.netplus.stbplay.R.drawable.ic_nav_continue,
+                ca.netplus.stbplay.R.drawable.ic_nav_favourite,
+                ca.netplus.stbplay.R.drawable.ic_nav_settings
+        };
+        for (int index = 0; index < descriptions.length; index++) {
+            Button button = navIconButton(icons[index], descriptions[index]);
             nav.addView(button, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(56)));
             if (index == 0) button.setOnClickListener(view -> showHomeScreen());
             if (index == 1) button.setOnClickListener(view -> showLiveScreen());
@@ -418,12 +428,13 @@ public final class MainActivity extends android.app.Activity {
         playbackBackAction = null;
         livePlayerScreen = false;
         livePinUnlocked = false;
+        selectNavigation(0);
         pageTitle.setText("Home");
-        pageStatus.setText("Android TV");
+        pageStatus.setText("READY  ·  Android TV");
         LinearLayout page = pageColumn();
-        page.setPadding(dp(36), dp(32), dp(36), dp(24));
-        page.addView(title("Welcome to STB PLAY", 34), wrap());
-        page.addView(text("A clean player for your authorised IPTV portal.", MUTED, 19), wrapWithTop(8));
+        page.setPadding(dp(26), dp(20), dp(26), dp(24));
+        page.addView(title("Welcome back", 30), wrap());
+        page.addView(text("Your authorised entertainment hub", MUTED, 17), wrapWithTop(5));
         addHomeHero(page);
         LinearLayout cards = new LinearLayout(this);
         cards.setPadding(0, dp(28), 0, 0);
@@ -458,17 +469,37 @@ public final class MainActivity extends android.app.Activity {
         LinearLayout hero = new LinearLayout(this);
         hero.setGravity(Gravity.CENTER_VERTICAL);
         hero.setClipChildren(false);
-        hero.setPadding(dp(18), dp(12), dp(18), dp(12));
-        hero.setBackground(round(PANEL_LIGHT, GOLD, 1, 14));
-        ImageView logo = logoImage();
-        hero.addView(logo, new LinearLayout.LayoutParams(dp(140), dp(140)));
+        hero.setPadding(dp(18), dp(14), dp(18), dp(14));
+        hero.setBackground(gradientRound(new int[]{PANEL_LIGHT, NAVY}, TEAL, 1, 16));
+        ImageView heroArt = new ImageView(this);
+        heroArt.setImageResource(ca.netplus.stbplay.R.drawable.tv_banner);
+        heroArt.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        heroArt.setBackground(round(PANEL, TEAL, 1, 12));
+        heroArt.setPadding(dp(5), dp(5), dp(5), dp(5));
+        hero.addView(heroArt, new LinearLayout.LayoutParams(dp(156), dp(118)));
         LinearLayout copy = pageColumn();
         copy.setBackgroundColor(Color.TRANSPARENT);
-        copy.setPadding(dp(18), 0, 0, 0);
-        copy.addView(title("Your entertainment hub", 25), wrap());
-        copy.addView(text(portalDisplayName() + "  ·  " + store.getMac(), MUTED, 15), wrapWithTop(7));
-        copy.addView(text("Browse provider content, continue where you stopped, and keep your setup private on this TV.", TEXT, 16), wrapWithTop(12));
+        copy.setPadding(dp(16), 0, dp(12), 0);
+        TextView eyebrow = text("STB PLAY  /  CONNECTED", TEAL, 12);
+        eyebrow.setTypeface(null, android.graphics.Typeface.BOLD);
+        copy.addView(eyebrow, wrap());
+        copy.addView(title("Your entertainment hub", 26), wrapWithTop(6));
+        copy.addView(text(portalDisplayName(), GOLD_BRIGHT, 15), wrapWithTop(6));
+        copy.addView(text("Browse live channels, discover titles and continue exactly where you stopped.", TEXT, 16), wrapWithTop(10));
         hero.addView(copy, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
+        LinearLayout ready = pageColumn();
+        ready.setGravity(Gravity.CENTER);
+        ready.setPadding(dp(10), dp(8), dp(10), dp(8));
+        ready.setBackground(round(Color.argb(90, 7, 16, 27), TEAL, 1, 12));
+        TextView readyLabel = text("READY", TEAL, 12);
+        readyLabel.setGravity(Gravity.CENTER);
+        readyLabel.setTypeface(null, android.graphics.Typeface.BOLD);
+        ready.addView(readyLabel, wrap());
+        TextView readyValue = text("PLAY", TEXT, 22);
+        readyValue.setGravity(Gravity.CENTER);
+        readyValue.setTypeface(null, android.graphics.Typeface.BOLD);
+        ready.addView(readyValue, wrapWithTop(2));
+        hero.addView(ready, new LinearLayout.LayoutParams(dp(92), dp(82)));
         page.addView(hero, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(176)));
     }
 
@@ -591,11 +622,12 @@ public final class MainActivity extends android.app.Activity {
 
     private Button infoCard(String heading, String subtitle, View.OnClickListener listener, boolean muted) {
         Button card = navButton(heading + "\n" + subtitle);
-        card.setBackground(round(muted ? PANEL : PANEL_LIGHT, GOLD, 1, 14));
+        card.setBackground(round(muted ? PANEL : PANEL_LIGHT, TEAL, 1, 14));
         card.setTextColor(TEXT);
-        card.setTextSize(sp(17));
+        card.setTextSize(sp(18));
         card.setGravity(Gravity.CENTER);
         card.setOnClickListener(listener);
+        card.setContentDescription(heading);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dp(150), 1f);
         params.rightMargin = dp(12);
         card.setLayoutParams(params);
@@ -609,6 +641,7 @@ public final class MainActivity extends android.app.Activity {
         screenBackAction = this::showHomeScreen;
         playbackBackAction = null;
         livePlayerScreen = true;
+        selectNavigation(1);
         pageTitle.setText("Live TV");
         pageStatus.setText(catalog == null ? "Loading catalogue…" : (catalog.channels.size() + " channels"));
         if (catalog == null) {
@@ -716,7 +749,7 @@ public final class MainActivity extends android.app.Activity {
             Channel channel = getItem(position);
             row.setText((channel.number >= 0 ? channel.number + "  " : "")
                     + (channel.locked ? "[PIN] " : "") + channel.title
-                    + (!channel.locked && favouriteChannelStore.isFavorite(channel.id) ? "   ♥" : ""));
+                    + (!channel.locked && favouriteChannelStore.isFavorite(channel.id) ? "   ★" : ""));
             row.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
             row.setTextSize(sp(15));
             row.setContentDescription("Open " + channel.title);
@@ -907,6 +940,7 @@ public final class MainActivity extends android.app.Activity {
         playbackBackAction = null;
         livePlayerScreen = false;
         livePinUnlocked = false;
+        selectNavigation(2);
         pageTitle.setText("Movies & Series");
         pageStatus.setText(vodCategories.isEmpty() ? "Loading catalogue…" : "Provider VOD catalogue");
         if (vodCategories.isEmpty()) {
@@ -1277,6 +1311,7 @@ public final class MainActivity extends android.app.Activity {
         playbackBackAction = null;
         livePlayerScreen = false;
         livePinUnlocked = false;
+        selectNavigation(4);
         pageTitle.setText("Favourites");
         List<VodItem> favorites = visibleFavorites();
         pageStatus.setText(favorites.size() + " saved titles");
@@ -1307,7 +1342,7 @@ public final class MainActivity extends android.app.Activity {
             for (Channel channel : catalog.channels) {
                 if (!favouriteChannelStore.isFavorite(channel.id)) continue;
                 channelCount++;
-                Button channelButton = navButton((channel.number >= 0 ? channel.number + "  " : "") + channel.title + "   ♥");
+                Button channelButton = navButton((channel.number >= 0 ? channel.number + "  " : "") + channel.title + "   ★");
                 channelButton.setOnClickListener(view -> startChannel(channel));
                 list.addView(channelButton, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
             }
@@ -1315,7 +1350,7 @@ public final class MainActivity extends android.app.Activity {
         if (channelCount == 0) list.addView(text("No favourite channels yet.", MUTED, 16), wrapWithTop(8));
         list.addView(title("Favourite Movies & Series", 21), wrapWithTop(22));
         for (VodItem item : favorites) addVodItemRow(list, item, true);
-        if (favorites.isEmpty()) list.addView(text("No favourite movies or series yet. Use the heart button to save a title.", MUTED, 16), wrapWithTop(8));
+        if (favorites.isEmpty()) list.addView(text("No favourite movies or series yet. Use the star button to save a title.", MUTED, 16), wrapWithTop(8));
         scroll.addView(list);
         body.addView(scroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         page.addView(body, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
@@ -1330,6 +1365,7 @@ public final class MainActivity extends android.app.Activity {
         playbackBackAction = null;
         livePlayerScreen = false;
         livePinUnlocked = false;
+        selectNavigation(3);
         pageTitle.setText("Continue Watching");
         List<WatchProgress> entries = visibleWatchProgress();
         pageStatus.setText(entries.size() + " titles in progress");
@@ -1913,6 +1949,7 @@ public final class MainActivity extends android.app.Activity {
         playbackBackAction = null;
         livePlayerScreen = false;
         livePinUnlocked = false;
+        selectNavigation(5);
         subscription = store.getSubscription();
         pageTitle.setText("Settings");
         updateHeaderStatus();
@@ -2655,6 +2692,7 @@ public final class MainActivity extends android.app.Activity {
             PANEL_LIGHT = Color.rgb(231, 237, 244);
             GOLD = Color.rgb(171, 117, 18);
             GOLD_BRIGHT = Color.rgb(126, 82, 0);
+            TEAL = Color.rgb(0, 125, 116);
             TEXT = Color.rgb(16, 32, 51);
             MUTED = Color.rgb(84, 103, 123);
             DANGER = Color.rgb(178, 25, 45);
@@ -2664,6 +2702,7 @@ public final class MainActivity extends android.app.Activity {
             PANEL_LIGHT = Color.rgb(23, 40, 58);
             GOLD = Color.rgb(233, 185, 87);
             GOLD_BRIGHT = Color.rgb(255, 217, 130);
+            TEAL = Color.rgb(57, 216, 196);
             TEXT = Color.rgb(245, 248, 252);
             MUTED = Color.rgb(169, 182, 197);
             DANGER = Color.rgb(255, 154, 154);
@@ -2737,6 +2776,43 @@ public final class MainActivity extends android.app.Activity {
         return view;
     }
 
+    private Button navIconButton(int iconRes, String label) {
+        Button button = navButton(ui(label));
+        button.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        button.setPadding(dp(14), 0, dp(8), 0);
+        button.setCompoundDrawablePadding(dp(13));
+        Drawable icon = getResources().getDrawable(iconRes);
+        icon.setTint(TEXT);
+        button.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null);
+        button.setContentDescription(label);
+        button.setOnFocusChangeListener((view, hasFocus) -> paintNavigationItem(view, hasFocus || view.isSelected()));
+        return button;
+    }
+
+    private void selectNavigation(int index) {
+        if (!(navigationRail instanceof LinearLayout)) return;
+        LinearLayout rail = (LinearLayout) navigationRail;
+        for (int childIndex = 1; childIndex < rail.getChildCount(); childIndex++) {
+            View child = rail.getChildAt(childIndex);
+            boolean active = childIndex - 1 == index;
+            child.setSelected(active);
+            paintNavigationItem(child, active || child.hasFocus());
+        }
+    }
+
+    private void paintNavigationItem(View view, boolean active) {
+        view.setBackground(round(active ? PANEL_LIGHT : PANEL, active ? TEAL : PANEL,
+                active ? 2 : 1, 10));
+        view.setScaleX(active ? 1.018f : 1f);
+        view.setScaleY(active ? 1.018f : 1f);
+        if (view instanceof Button) {
+            Button button = (Button) view;
+            button.setTextColor(TEXT);
+            Drawable[] drawables = button.getCompoundDrawables();
+            if (drawables.length > 0 && drawables[0] != null) drawables[0].setTint(active ? TEAL : TEXT);
+        }
+    }
+
     private EditText field(String hint, String value) {
         EditText field = new EditText(this);
         field.setHint(hint);
@@ -2772,9 +2848,9 @@ public final class MainActivity extends android.app.Activity {
         button.setBackground(round(PANEL, PANEL, 1, 8));
         button.setOnFocusChangeListener((view, hasFocus) -> {
             view.setBackground(round(hasFocus ? PANEL_LIGHT : PANEL,
-                    hasFocus ? GOLD_BRIGHT : PANEL, hasFocus ? 2 : 1, 8));
-            view.setScaleX(hasFocus ? 1.025f : 1f);
-            view.setScaleY(hasFocus ? 1.025f : 1f);
+                    hasFocus ? TEAL : PANEL, hasFocus ? 2 : 1, 8));
+            view.setScaleX(hasFocus ? 1.018f : 1f);
+            view.setScaleY(hasFocus ? 1.018f : 1f);
             ((Button) view).setTextColor(TEXT);
         });
         return button;
@@ -2783,6 +2859,13 @@ public final class MainActivity extends android.app.Activity {
     private GradientDrawable round(int fill, int stroke, int width, int radius) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(fill);
+        drawable.setCornerRadius(dp(radius));
+        drawable.setStroke(dp(width), stroke);
+        return drawable;
+    }
+
+    private GradientDrawable gradientRound(int[] colors, int stroke, int width, int radius) {
+        GradientDrawable drawable = new GradientDrawable(GradientDrawable.Orientation.TL_BR, colors);
         drawable.setCornerRadius(dp(radius));
         drawable.setStroke(dp(width), stroke);
         return drawable;

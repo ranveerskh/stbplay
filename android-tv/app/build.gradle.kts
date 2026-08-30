@@ -15,8 +15,8 @@ android {
         applicationId = "ca.netplus.stbplay"
         minSdk = 23
         targetSdk = 35
-        versionCode = 162
-        versionName = "1.6.2"
+        versionCode = 163
+        versionName = "1.6.3"
     }
 
     flavorDimensions += "distribution"

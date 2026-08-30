@@ -30,7 +30,7 @@ The first native test target contains:
 - automatic Next Episode prompt with five-second autoplay countdown, including the next season when available
 - Dark/Light theme choice and English/Punjabi/Hindi navigation language choice
 - separate `sideload` and `play` build variants; only the sideload variant requests Android's unknown-app installer permission
-- v1.6.2 polish: transparent logo treatment, stable hero sizing, restored Season/Episode scroll position, deterministic D-pad focus, player retry and clear unsupported-stream messages
+- v1.6.3 TV polish: consistent vector navigation icons, teal remote-focus states, cleaner header, richer hero panel and responsive card emphasis
 - faster poster loading with request coalescing, image-size sampling and a bounded download size; local catalogue data is shown before refresh work begins
 - physical Back now returns through Home, VOD, series, quality and player states without stale loading responses replacing the current screen
 - build compatibility fix: Android API 36 with AGP 8.9.1 and Gradle 8.11.1 for the current Media3 release, plus Android-safe JSON key iteration and valid ScrollView listener signatures
