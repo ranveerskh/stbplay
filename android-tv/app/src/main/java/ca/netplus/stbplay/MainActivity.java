@@ -113,6 +113,7 @@ public final class MainActivity extends android.app.Activity {
     private boolean episodeEndHandled;
     private View appHeader;
     private View navigationRail;
+    private final List<Button> navigationButtons = new ArrayList<>();
     private Button fullscreenToggle;
     private ProgressBar portalProgressBar;
     private TextView portalProgressText;
@@ -357,45 +358,46 @@ public final class MainActivity extends android.app.Activity {
         stopPlayback();
         retryPlaybackAction = null;
         root = pageColumn();
-        root.setPadding(dp(20), dp(12), dp(20), dp(14));
+        root.setPadding(dp(30), dp(18), dp(30), dp(20));
 
+        // A compact top bar gives the content room to breathe. The old
+        // permanent rail made every page feel like a settings screen and
+        // became especially cramped on 720p TVs.
         LinearLayout header = new LinearLayout(this);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setPadding(dp(4), 0, dp(6), 0);
-        LinearLayout headerCopy = pageColumn();
-        headerCopy.setGravity(Gravity.CENTER_VERTICAL);
-        headerCopy.setBackgroundColor(Color.TRANSPARENT);
-        TextView headerBrand = text("STB PLAY  /  ANDROID TV", TEAL, 11);
-        headerBrand.setTypeface(null, android.graphics.Typeface.BOLD);
-        headerCopy.addView(headerBrand, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(16)));
-        pageTitle = title("Home", 23);
-        headerCopy.addView(pageTitle, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(30)));
-        header.addView(headerCopy, new LinearLayout.LayoutParams(0, dp(54), 1f));
-        pageStatus = text("READY  ·  CONNECTED", MUTED, 12);
-        pageStatus.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
-        header.addView(pageStatus, wrap());
-        appHeader = header;
-        root.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
-        View headerRule = new View(this);
-        headerRule.setBackgroundColor(Color.argb(110, Color.red(TEAL), Color.green(TEAL), Color.blue(TEAL)));
-        root.addView(headerRule, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1)));
-
-        LinearLayout body = new LinearLayout(this);
-        body.setOrientation(LinearLayout.HORIZONTAL);
-        LinearLayout nav = pageColumn();
-        nav.setBackground(gradientRound(new int[]{PANEL_LIGHT, PANEL}, TEAL, 1, 16));
-        nav.setPadding(dp(10), dp(12), dp(10), dp(12));
+        header.setPadding(dp(2), 0, dp(2), 0);
         LinearLayout brand = new LinearLayout(this);
         brand.setGravity(Gravity.CENTER_VERTICAL);
         ImageView brandLogo = logoImage();
-        brand.addView(brandLogo, new LinearLayout.LayoutParams(dp(52), dp(52)));
-        TextView brandName = title("STB PLAY", 20);
+        brand.addView(brandLogo, new LinearLayout.LayoutParams(dp(44), dp(44)));
+        LinearLayout brandCopy = pageColumn();
+        brandCopy.setGravity(Gravity.CENTER_VERTICAL);
+        brandCopy.setPadding(dp(10), 0, 0, 0);
+        TextView brandName = title("STB PLAY", 18);
         brandName.setTextColor(GOLD_BRIGHT);
-        LinearLayout.LayoutParams brandNameParams = new LinearLayout.LayoutParams(0, dp(52), 1f);
-        brandNameParams.leftMargin = dp(10);
-        brand.addView(brandName, brandNameParams);
-        nav.addView(brand, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(60)));
+        brandCopy.addView(brandName, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(23)));
+        TextView brandTag = text("ANDROID TV", TEAL, 10);
+        brandTag.setTypeface(null, android.graphics.Typeface.BOLD);
+        brandCopy.addView(brandTag, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(16)));
+        brand.addView(brandCopy, new LinearLayout.LayoutParams(dp(160), dp(44)));
+        header.addView(brand, new LinearLayout.LayoutParams(dp(188), dp(50)));
+        pageTitle = title("Home", 25);
+        pageTitle.setGravity(Gravity.CENTER);
+        header.addView(pageTitle, new LinearLayout.LayoutParams(0, dp(50), 1f));
+        pageStatus = text("READY  ·  CONNECTED", MUTED, 11);
+        pageStatus.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        header.addView(pageStatus, new LinearLayout.LayoutParams(dp(220), dp(50)));
+        appHeader = header;
+        root.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
 
+        HorizontalScrollView navScroll = new HorizontalScrollView(this);
+        navScroll.setHorizontalScrollBarEnabled(false);
+        navScroll.setClipToPadding(false);
+        LinearLayout nav = new LinearLayout(this);
+        nav.setGravity(Gravity.CENTER_VERTICAL);
+        nav.setPadding(dp(4), dp(4), dp(4), dp(4));
+        nav.setBackground(round(PANEL, PANEL, 0, 14));
+        navigationButtons.clear();
         String[] descriptions = {"Home", "Live TV", "Movies & Series", "Continue Watching", "Favourites", "Settings"};
         int[] icons = {
                 ca.netplus.stbplay.R.drawable.ic_nav_home,
@@ -407,7 +409,8 @@ public final class MainActivity extends android.app.Activity {
         };
         for (int index = 0; index < descriptions.length; index++) {
             Button button = navIconButton(icons[index], descriptions[index]);
-            nav.addView(button, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(52)));
+            navigationButtons.add(button);
+            nav.addView(button, new LinearLayout.LayoutParams(dp(index == 2 ? 178 : 142), dp(48)));
             if (index == 0) button.setOnClickListener(view -> showHomeScreen());
             if (index == 1) button.setOnClickListener(view -> showLiveScreen());
             if (index == 2) button.setOnClickListener(view -> showVodScreen());
@@ -415,13 +418,15 @@ public final class MainActivity extends android.app.Activity {
             if (index == 4) button.setOnClickListener(view -> showFavoritesScreen());
             if (index == 5) button.setOnClickListener(view -> showSettings());
         }
-        navigationRail = nav;
-        LinearLayout.LayoutParams navParams = new LinearLayout.LayoutParams(dp(210), ViewGroup.LayoutParams.MATCH_PARENT);
-        navParams.rightMargin = dp(16);
-        body.addView(nav, navParams);
+        navScroll.addView(nav, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(56)));
+        navigationRail = navScroll;
+        root.addView(navScroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(58)));
+        View headerRule = new View(this);
+        headerRule.setBackgroundColor(Color.argb(55, Color.red(TEAL), Color.green(TEAL), Color.blue(TEAL)));
+        root.addView(headerRule, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(1)));
+
         content = new FrameLayout(this);
-        body.addView(content, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
-        root.addView(body, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        root.addView(content, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         setContentView(root);
         showHomeScreen();
         updateHeaderStatus();
@@ -440,16 +445,26 @@ public final class MainActivity extends android.app.Activity {
         pageTitle.setText("Home");
         pageStatus.setText("READY  ·  CONNECTED");
         LinearLayout page = pageColumn();
-        page.setPadding(dp(22), dp(14), dp(22), dp(22));
-        page.addView(title("Welcome back", 27), wrap());
+        page.setPadding(dp(18), dp(18), dp(18), dp(26));
+        page.addView(title("Welcome back", 29), wrap());
         page.addView(text("Your authorised entertainment hub", MUTED, 15), wrapWithTop(4));
         addHomeHero(page);
+        page.addView(text("QUICK ACCESS", TEAL, 12), wrapWithTop(22));
         LinearLayout cards = new LinearLayout(this);
-        cards.setPadding(0, dp(18), 0, 0);
-        LinearLayout.LayoutParams liveParams = new LinearLayout.LayoutParams(0, dp(116), 1f);
-        liveParams.rightMargin = dp(12);
-        cards.addView(infoCard("LIVE TV", "Open your provider's live catalogue", v -> showLiveScreen()), liveParams);
-        cards.addView(infoCard("MOVIES & SERIES", "Open the provider's VOD catalogue", v -> showVodScreen()), new LinearLayout.LayoutParams(0, dp(116), 1f));
+        cards.setPadding(0, dp(8), 0, 0);
+        if (screenWidthDp() <= 900) {
+            cards.setOrientation(LinearLayout.VERTICAL);
+            cards.addView(infoCard("LIVE TV", "Browse channels and start watching", v -> showLiveScreen()),
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(100)));
+            cards.addView(infoCard("MOVIES & SERIES", "Explore films, shows and episodes", v -> showVodScreen()),
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(100)));
+        } else {
+            LinearLayout.LayoutParams liveParams = new LinearLayout.LayoutParams(0, dp(104), 1f);
+            liveParams.rightMargin = dp(12);
+            cards.addView(infoCard("LIVE TV", "Browse channels and start watching", v -> showLiveScreen()), liveParams);
+            cards.addView(infoCard("MOVIES & SERIES", "Explore films, shows and episodes", v -> showVodScreen()),
+                    new LinearLayout.LayoutParams(0, dp(104), 1f));
+        }
         page.addView(cards);
         List<WatchProgress> inProgress = visibleWatchProgress();
         List<VodItem> cachedItems = vodCache.loadAll();
@@ -466,7 +481,7 @@ public final class MainActivity extends android.app.Activity {
         } else {
             page.addView(text("Home automatically hides restricted/adult titles from recommendations, favourites and Continue Watching.", MUTED, 15), wrapWithTop(28));
         }
-        page.addView(text("Your portal, MAC, preferences and PIN stay on this device. No IPTV subscription or media is included.", MUTED, 15), wrapWithTop(18));
+        page.addView(text("Your portal, preferences and PIN stay on this device.", MUTED, 13), wrapWithTop(20));
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
         scroll.addView(page);
@@ -479,40 +494,40 @@ public final class MainActivity extends android.app.Activity {
         LinearLayout hero = new LinearLayout(this);
         hero.setGravity(Gravity.CENTER_VERTICAL);
         hero.setClipChildren(false);
-        hero.setPadding(dp(16), dp(12), dp(16), dp(12));
-        hero.setBackground(gradientRound(new int[]{Color.rgb(27, 48, 68), Color.rgb(8, 20, 34)}, TEAL, 1, 16));
+        hero.setPadding(dp(18), dp(16), dp(18), dp(16));
+        hero.setBackground(gradientRound(new int[]{Color.rgb(25, 48, 69), Color.rgb(10, 23, 38)}, Color.TRANSPARENT, 0, 18));
         ImageView heroArt = new ImageView(this);
         heroArt.setImageResource(ca.netplus.stbplay.R.drawable.tv_banner);
         heroArt.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        heroArt.setBackground(round(PANEL, TEAL, 1, 12));
-        heroArt.setPadding(dp(5), dp(5), dp(5), dp(5));
-        hero.addView(heroArt, new LinearLayout.LayoutParams(dp(136), dp(106)));
+        heroArt.setBackground(round(PANEL, Color.TRANSPARENT, 0, 12));
+        heroArt.setPadding(dp(4), dp(4), dp(4), dp(4));
+        hero.addView(heroArt, new LinearLayout.LayoutParams(dp(220), dp(138)));
         LinearLayout copy = pageColumn();
         copy.setBackgroundColor(Color.TRANSPARENT);
-        copy.setPadding(dp(16), 0, dp(12), 0);
+        copy.setPadding(dp(20), 0, dp(16), 0);
         TextView eyebrow = text("STB PLAY  /  CONNECTED", TEAL, 12);
         eyebrow.setTypeface(null, android.graphics.Typeface.BOLD);
         copy.addView(eyebrow, wrap());
-        copy.addView(title("Your entertainment hub", 22), wrapWithTop(5));
+        copy.addView(title("Your entertainment hub", 25), wrapWithTop(5));
         copy.addView(text(portalDisplayName(), GOLD_BRIGHT, 14), wrapWithTop(5));
-        TextView description = text("Live channels, films and series — all in one place.", TEXT, 14);
+        TextView description = text("Live channels, films and series — all in one place.", TEXT, 15);
         description.setMaxLines(2);
         copy.addView(description, wrapWithTop(8));
         hero.addView(copy, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         LinearLayout ready = pageColumn();
         ready.setGravity(Gravity.CENTER);
-        ready.setPadding(dp(8), dp(8), dp(8), dp(8));
-        ready.setBackground(round(Color.argb(110, 7, 16, 27), TEAL, 1, 12));
-        TextView readyLabel = text("CONNECTED", TEAL, 10);
+        ready.setPadding(dp(10), dp(10), dp(10), dp(10));
+        ready.setBackground(round(Color.argb(150, 7, 16, 27), Color.argb(90, 57, 216, 196), 1, 12));
+        TextView readyLabel = text("STATUS", TEAL, 10);
         readyLabel.setGravity(Gravity.CENTER);
         readyLabel.setTypeface(null, android.graphics.Typeface.BOLD);
         ready.addView(readyLabel, wrap());
-        TextView readyValue = text("WATCH", TEXT, 17);
+        TextView readyValue = text("READY", TEXT, 17);
         readyValue.setGravity(Gravity.CENTER);
         readyValue.setTypeface(null, android.graphics.Typeface.BOLD);
         ready.addView(readyValue, wrapWithTop(2));
-        hero.addView(ready, new LinearLayout.LayoutParams(dp(104), dp(76)));
-        page.addView(hero, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(154)));
+        hero.addView(ready, new LinearLayout.LayoutParams(dp(108), dp(78)));
+        page.addView(hero, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(170)));
     }
 
     private void addHomeContinueShelf(LinearLayout page, List<WatchProgress> entries) {
@@ -638,7 +653,7 @@ public final class MainActivity extends android.app.Activity {
         card.setFocusableInTouchMode(true);
         card.setClickable(true);
         card.setPadding(dp(18), dp(14), dp(18), dp(12));
-        card.setBackground(round(muted ? PANEL : PANEL_LIGHT, TEAL, 1, 14));
+        card.setBackground(round(muted ? PANEL : PANEL_LIGHT, PANEL, 0, 16));
         int iconRes = "LIVE TV".equals(heading)
                 ? ca.netplus.stbplay.R.drawable.ic_nav_live
                 : ca.netplus.stbplay.R.drawable.ic_nav_movies;
@@ -666,7 +681,7 @@ public final class MainActivity extends android.app.Activity {
         card.addView(arrow, arrowParams);
         card.setOnFocusChangeListener((view, hasFocus) -> {
             view.setBackground(round(hasFocus ? PANEL_LIGHT : (muted ? PANEL : PANEL_LIGHT),
-                    TEAL, hasFocus ? 2 : 1, 14));
+                    hasFocus ? TEAL : PANEL, hasFocus ? 2 : 0, 16));
             view.setScaleX(hasFocus ? 1.018f : 1f);
             view.setScaleY(hasFocus ? 1.018f : 1f);
             arrow.setTextColor(hasFocus ? TEAL : GOLD_BRIGHT);
@@ -1120,18 +1135,36 @@ public final class MainActivity extends android.app.Activity {
         pageTitle.setText("Movies & Series");
         pageStatus.setText(vodItems.size() + " titles loaded");
         LinearLayout page = pageColumn();
-        page.setPadding(dp(10), dp(10), dp(18), dp(16));
+        page.setPadding(dp(18), dp(14), dp(18), dp(18));
 
-        LinearLayout categories = pageColumn();
-        categories.setPadding(dp(4), 0, dp(8), dp(8));
-        ScrollView categoryScroll = new ScrollView(this);
-        categoryScroll.setVerticalScrollBarEnabled(false);
-        categoryScroll.addView(categories);
+        LinearLayout browseHeader = new LinearLayout(this);
+        browseHeader.setGravity(Gravity.CENTER_VERTICAL);
+        TextView eyebrow = text("YOUR LIBRARY", TEAL, 12);
+        eyebrow.setTypeface(null, android.graphics.Typeface.BOLD);
+        browseHeader.addView(eyebrow, new LinearLayout.LayoutParams(0, dp(24), 1f));
+        TextView catalogueCount = text(vodItems.size() + " titles", MUTED, 12);
+        catalogueCount.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        browseHeader.addView(catalogueCount, wrap());
+        page.addView(browseHeader, wrap());
+
+        HorizontalScrollView categoryScroll = new HorizontalScrollView(this);
+        categoryScroll.setHorizontalScrollBarEnabled(false);
+        categoryScroll.setClipToPadding(false);
+        LinearLayout categories = new LinearLayout(this);
+        categories.setGravity(Gravity.CENTER_VERTICAL);
+        categories.setPadding(0, dp(8), dp(10), dp(8));
         for (VodCategory category : vodCategories) {
-            Button button = catalogueButton((category.locked ? "[PIN] " : "") + category.title);
+            Button button = catalogueButton((category.locked ? "PIN  ·  " : "") + category.title);
             button.setSelected(selectedVodCategory != null && category.id.equals(selectedVodCategory.id));
-            button.setBackground(round(button.isSelected() ? PANEL_LIGHT : PANEL,
-                    button.isSelected() ? TEAL : PANEL, button.isSelected() ? 2 : 1, 8));
+            button.setBackground(round(button.isSelected() ? TEAL : PANEL,
+                    button.isSelected() ? TEAL : PANEL, 0, 22));
+            button.setTextColor(button.isSelected() ? NAVY : TEXT);
+            button.setOnFocusChangeListener((view, hasFocus) -> {
+                boolean selected = view.isSelected();
+                view.setBackground(round(selected ? TEAL : (hasFocus ? PANEL_LIGHT : PANEL),
+                        selected ? TEAL : (hasFocus ? TEAL : PANEL), hasFocus && !selected ? 2 : 0, 22));
+                ((Button) view).setTextColor(selected ? NAVY : TEXT);
+            });
             button.setOnClickListener(view -> {
                 if (category.locked && !livePinUnlocked) {
                     askForPin(() -> selectVodCategory(category));
@@ -1139,23 +1172,28 @@ public final class MainActivity extends android.app.Activity {
                     selectVodCategory(category);
                 }
             });
-            categories.addView(button, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
+            LinearLayout.LayoutParams categoryParams = new LinearLayout.LayoutParams(dp(148), dp(42));
+            categoryParams.rightMargin = dp(8);
+            categories.addView(button, categoryParams);
         }
+        categoryScroll.addView(categories, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(58)));
+        page.addView(categoryScroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(58)));
+
         LinearLayout browse = pageColumn();
-        browse.setPadding(dp(4), 0, 0, 0);
+        browse.setPadding(0, dp(4), 0, 0);
         LinearLayout searchRow = new LinearLayout(this);
         searchRow.setGravity(Gravity.CENTER_VERTICAL);
         vodSearchField = field(screenWidthDp() <= 1200
                 ? "Search titles, genres or year"
                 : "Search titles, original title, genre, language or year", vodSearchQuery);
         vodSearchField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        searchRow.addView(vodSearchField, new LinearLayout.LayoutParams(0, dp(54), 1f));
-        Button refresh = navButton("Refresh");
+        searchRow.addView(vodSearchField, new LinearLayout.LayoutParams(0, dp(50), 1f));
+        Button refresh = catalogueButton("Refresh");
         refresh.setOnClickListener(view -> loadVodPage(true));
-        LinearLayout.LayoutParams refreshParams = new LinearLayout.LayoutParams(dp(112), dp(54));
+        LinearLayout.LayoutParams refreshParams = new LinearLayout.LayoutParams(dp(112), dp(50));
         refreshParams.leftMargin = dp(10);
         searchRow.addView(refresh, refreshParams);
-        browse.addView(searchRow, wrapWithTop(5));
+        browse.addView(searchRow, wrap());
         vodSearchField.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence value, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence value, int start, int before, int count) {
@@ -1166,17 +1204,15 @@ public final class MainActivity extends android.app.Activity {
         });
 
         vodItemsStatus = text("", MUTED, 14);
-        browse.addView(vodItemsStatus, wrapWithTop(10));
+        browse.addView(vodItemsStatus, wrapWithTop(8));
         ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.setSmoothScrollingEnabled(false);
         vodItemsContainer = pageColumn();
-        vodItemsContainer.setPadding(0, dp(4), dp(8), dp(24));
+        vodItemsContainer.setPadding(0, dp(8), dp(8), dp(24));
         scroll.addView(vodItemsContainer);
         browse.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
-        LinearLayout browseShell = new LinearLayout(this);
-        browseShell.setOrientation(LinearLayout.HORIZONTAL);
-        browseShell.addView(categoryScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.24f));
-        browseShell.addView(browse, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.76f));
-        page.addView(browseShell, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        page.addView(browse, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         replaceContent(page);
         renderVodItems();
         if (!vodCategories.isEmpty()) categories.getChildAt(0).requestFocus();
@@ -1275,11 +1311,11 @@ public final class MainActivity extends android.app.Activity {
                 for (int index = start; index < end; index++) {
                     VodItem item = visibleItems.get(index);
                     LinearLayout card = vodGridCard(item);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dp(174), 1f);
-                    params.rightMargin = dp(12);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dp(216), 1f);
+                    params.rightMargin = dp(14);
                     row.addView(card, params);
                 }
-                vodItemsContainer.addView(row, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(184)));
+                vodItemsContainer.addView(row, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(226)));
             }
         }
         Button more = navButton(vodItemsLoading ? "Loading…" : "Load more titles");
@@ -1291,22 +1327,22 @@ public final class MainActivity extends android.app.Activity {
     private LinearLayout vodGridCard(VodItem item) {
         LinearLayout card = pageColumn();
         card.setBackground(round(PANEL, PANEL, 1, 8));
-        card.setPadding(dp(2), dp(2), dp(2), dp(2));
+        card.setPadding(dp(3), dp(3), dp(3), dp(3));
         card.setFocusable(true);
         card.setClickable(true);
-        card.addView(posterBlock(item, dp(116), false), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(116)));
-        TextView label = text((VodPolicy.isRestricted(item) ? "[PIN] " : "") + item.title, TEXT, 13);
+        card.addView(posterBlock(item, dp(150), false), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(150)));
+        TextView label = text((VodPolicy.isRestricted(item) ? "PIN  ·  " : "") + item.title, TEXT, 14);
         label.setMaxLines(1);
         label.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        label.setPadding(dp(8), dp(5), dp(8), 0);
-        card.addView(label, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(28)));
-        TextView metadata = text(vodCardMetadata(item), MUTED, 10);
+        label.setPadding(dp(8), dp(8), dp(8), 0);
+        card.addView(label, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(31)));
+        TextView metadata = text((item.isSeries ? "SERIES" : "MOVIE") + "  ·  " + vodCardMetadata(item), MUTED, 11);
         metadata.setMaxLines(1);
         metadata.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        metadata.setPadding(dp(8), 0, dp(8), dp(4));
-        card.addView(metadata, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(24)));
+        metadata.setPadding(dp(8), dp(2), dp(8), dp(6));
+        card.addView(metadata, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(28)));
         card.setOnFocusChangeListener((view, hasFocus) -> view.setBackground(round(hasFocus ? PANEL_LIGHT : PANEL,
-                hasFocus ? TEAL : PANEL, hasFocus ? 2 : 1, 8)));
+                hasFocus ? TEAL : PANEL, hasFocus ? 2 : 1, 12)));
         card.setOnClickListener(view -> {
             if (VodPolicy.isRestricted(item) && !livePinUnlocked) askForPin(() -> openVodItem(item));
             else openVodItem(item);
@@ -1371,7 +1407,7 @@ public final class MainActivity extends android.app.Activity {
 
     private FrameLayout posterBlock(VodItem item, int height, boolean showOverlayTitle) {
         FrameLayout frame = new FrameLayout(this);
-        frame.setBackground(round(PANEL_LIGHT, PANEL_LIGHT, 1, 8));
+        frame.setBackground(round(PANEL_LIGHT, PANEL_LIGHT, 0, 10));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) frame.setClipToOutline(true);
 
         ImageView poster = new ImageView(this);
@@ -1438,27 +1474,17 @@ public final class MainActivity extends android.app.Activity {
         List<VodItem> favorites = visibleFavorites();
         pageStatus.setText(favorites.size() + " saved titles");
         LinearLayout page = pageColumn();
-        page.setPadding(dp(30), dp(24), dp(30), dp(24));
+        page.setPadding(dp(18), dp(18), dp(18), dp(22));
         page.addView(title("Favourites", 28), wrap());
-        page.addView(text("Your saved Movies & Series titles", MUTED, 17), wrapWithTop(8));
-        LinearLayout body = new LinearLayout(this);
-        body.setOrientation(LinearLayout.HORIZONTAL);
-        LinearLayout filters = pageColumn();
-        filters.setPadding(0, dp(14), dp(12), 0);
-        String[] filterLabels = {"All Favourites", "Live Channels", "Movies", "Series"};
-        for (String filterLabel : filterLabels) {
-            Button filter = navButton(filterLabel);
-            filters.addView(filter, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
-        }
-        body.addView(filters, new LinearLayout.LayoutParams(dp(190), ViewGroup.LayoutParams.MATCH_PARENT));
+        page.addView(text("Titles and channels you saved on this TV", MUTED, 15), wrapWithTop(5));
 
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
         scroll.setSmoothScrollingEnabled(false);
         scroll.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
         LinearLayout list = pageColumn();
-        list.setPadding(dp(4), dp(14), dp(10), dp(20));
-        list.addView(title("Favourite Channels", 21), wrap());
+        list.setPadding(0, dp(18), dp(10), dp(20));
+        list.addView(text("FAVOURITE CHANNELS", TEAL, 12), wrap());
         int channelCount = 0;
         if (catalog != null) {
             for (Channel channel : catalog.channels) {
@@ -1470,12 +1496,11 @@ public final class MainActivity extends android.app.Activity {
             }
         }
         if (channelCount == 0) list.addView(text("No favourite channels yet.", MUTED, 16), wrapWithTop(8));
-        list.addView(title("Favourite Movies & Series", 21), wrapWithTop(22));
+        list.addView(text("FAVOURITE MOVIES & SERIES", TEAL, 12), wrapWithTop(24));
         for (VodItem item : favorites) addVodItemRow(list, item, true);
         if (favorites.isEmpty()) list.addView(text("No favourite movies or series yet. Use the star button to save a title.", MUTED, 16), wrapWithTop(8));
         scroll.addView(list);
-        body.addView(scroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
-        page.addView(body, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        page.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         replaceContent(page);
         if (list.getChildCount() > 1) list.getChildAt(1).requestFocus();
     }
@@ -1492,15 +1517,15 @@ public final class MainActivity extends android.app.Activity {
         List<WatchProgress> entries = visibleWatchProgress();
         pageStatus.setText(entries.size() + " titles in progress");
         LinearLayout page = pageColumn();
-        page.setPadding(dp(30), dp(24), dp(30), dp(24));
+        page.setPadding(dp(18), dp(18), dp(18), dp(22));
         page.addView(title("Continue Watching", 28), wrap());
-        page.addView(text("Resume your movie or episode from where you stopped", MUTED, 17), wrapWithTop(8));
-        Button clear = navButton("Clear all history");
+        page.addView(text("Pick up exactly where you left off", MUTED, 15), wrapWithTop(5));
+        Button clear = catalogueButton("Clear history");
         clear.setOnClickListener(view -> {
             continueStore.clear();
             showContinueWatchingScreen();
         });
-        page.addView(clear, new LinearLayout.LayoutParams(dp(220), dp(52)));
+        page.addView(clear, new LinearLayout.LayoutParams(dp(170), dp(48)));
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
         scroll.setSmoothScrollingEnabled(true);
@@ -2795,9 +2820,9 @@ public final class MainActivity extends android.app.Activity {
         if (appHeader != null) appHeader.setVisibility(enabled ? View.GONE : View.VISIBLE);
         if (navigationRail != null) navigationRail.setVisibility(enabled ? View.GONE : View.VISIBLE);
         if (root != null) {
-            int horizontal = enabled ? 0 : dp(20);
-            int top = enabled ? 0 : dp(12);
-            int bottom = enabled ? 0 : dp(14);
+            int horizontal = enabled ? 0 : dp(30);
+            int top = enabled ? 0 : dp(18);
+            int bottom = enabled ? 0 : dp(20);
             root.setPadding(horizontal, top, horizontal, bottom);
         }
         if (fullscreenToggle != null) fullscreenToggle.setText(enabled ? "Exit Fullscreen" : "Fullscreen");
@@ -2945,11 +2970,9 @@ public final class MainActivity extends android.app.Activity {
     }
 
     private void selectNavigation(int index) {
-        if (!(navigationRail instanceof LinearLayout)) return;
-        LinearLayout rail = (LinearLayout) navigationRail;
-        for (int childIndex = 1; childIndex < rail.getChildCount(); childIndex++) {
-            View child = rail.getChildAt(childIndex);
-            boolean active = childIndex - 1 == index;
+        for (int childIndex = 0; childIndex < navigationButtons.size(); childIndex++) {
+            View child = navigationButtons.get(childIndex);
+            boolean active = childIndex == index;
             child.setSelected(active);
             paintNavigationItem(child, active || child.hasFocus());
         }
@@ -2957,7 +2980,7 @@ public final class MainActivity extends android.app.Activity {
 
     private void paintNavigationItem(View view, boolean active) {
         view.setBackground(round(active ? PANEL_LIGHT : PANEL, active ? TEAL : PANEL,
-                active ? 2 : 1, 10));
+                active ? 2 : 0, 12));
         view.setScaleX(active ? 1.018f : 1f);
         view.setScaleY(active ? 1.018f : 1f);
         if (view instanceof Button) {
@@ -2977,7 +3000,9 @@ public final class MainActivity extends android.app.Activity {
         field.setTextSize(sp(17));
         field.setSingleLine(true);
         field.setPadding(dp(16), 0, dp(16), 0);
-        field.setBackground(round(PANEL_LIGHT, GOLD, 2, 10));
+        field.setBackground(round(PANEL_LIGHT, PANEL_LIGHT, 0, 12));
+        field.setOnFocusChangeListener((view, hasFocus) -> view.setBackground(round(
+                hasFocus ? PANEL_LIGHT : PANEL, hasFocus ? GOLD : PANEL_LIGHT, hasFocus ? 2 : 0, 12)));
         return field;
     }
 
@@ -3008,11 +3033,11 @@ public final class MainActivity extends android.app.Activity {
         button.setClickable(true);
         button.setStateListAnimator(null);
         button.setPadding(dp(8), 0, dp(8), 0);
-        button.setBackground(round(PANEL, PANEL, 1, 8));
+        button.setBackground(round(PANEL, PANEL, 0, 10));
         button.setOnFocusChangeListener((view, hasFocus) -> {
             boolean active = hasFocus || view.isSelected();
             view.setBackground(round(active ? PANEL_LIGHT : PANEL,
-                    active ? TEAL : PANEL, active ? 2 : 1, 8));
+                    active ? TEAL : PANEL, active ? 2 : 0, 10));
             view.setScaleX(active ? 1.018f : 1f);
             view.setScaleY(active ? 1.018f : 1f);
             ((Button) view).setTextColor(TEXT);
