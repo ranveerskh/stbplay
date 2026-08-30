@@ -57,9 +57,11 @@ disabled while that endpoint is blank.
 
 ## Build
 
-Upload the contents of this `android-tv` folder as the root of a separate
-GitHub repository. The supplied GitHub Actions workflow builds the sideload
-debug APK. A local Android SDK is required for a local build:
+For the combined `ranveerskh/stbplay` repository, the active workflows live in
+`.github/workflows/` at the repository root and build from the `android-tv/`
+project directory. If this folder is later used as a standalone repository,
+move or copy those workflows to that repository's top-level `.github/workflows/`
+folder. The supplied workflow builds the sideload debug APK. A local Android SDK is required for a local build:
 
 ```text
 gradle assembleSideloadDebug
