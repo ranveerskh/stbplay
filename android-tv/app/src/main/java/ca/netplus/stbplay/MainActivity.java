@@ -715,17 +715,64 @@ public final class MainActivity extends android.app.Activity {
 
         LinearLayout split = new LinearLayout(this);
         split.setOrientation(LinearLayout.HORIZONTAL);
-        split.setPadding(0, dp(14), 0, 0);
-        LinearLayout left = pageColumn();
-        left.setPadding(dp(6), 0, dp(18), 0);
-        LinearLayout categories = pageColumn();
-        categories.setPadding(0, 0, dp(8), dp(8));
+        split.setPadding(0, dp(12), 0, 0);
+        List<Channel> visible = new ArrayList<>();
+        for (Channel channel : catalog.channels) {
+            if (selectedCategory.equals("all") || selectedCategory.equals(channel.categoryId)) visible.add(channel);
+        }
+
+        // Windows-style TV layout: the player owns the main canvas and the
+        // channel guide stays in a compact box on the right.
+        LinearLayout playerColumn = pageColumn();
+        playerColumn.setPadding(0, 0, dp(12), 0);
+        playerView = new PlayerView(this);
+        configurePlayerView(playerView);
+        playerView.setVisibility(View.INVISIBLE);
+        FrameLayout playerShell = new FrameLayout(this);
+        playerShell.setBackground(round(Color.BLACK, Color.rgb(31, 58, 79), 1, 14));
+        playerShell.addView(playerView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        playerShell.addView(playerPlaceholder("Select a channel to start playback."),
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        playerColumn.addView(playerShell, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        LinearLayout playerControls = new LinearLayout(this);
+        playerControls.setOrientation(LinearLayout.HORIZONTAL);
+        Button fullscreen = fullscreenButton();
+        playerControls.addView(fullscreen, new LinearLayout.LayoutParams(0, dp(48), 1f));
+        Button retry = navButton("Retry stream");
+        retryPlaybackButton = retry;
+        retry.setEnabled(false);
+        retry.setOnClickListener(view -> retryCurrentPlayback());
+        LinearLayout.LayoutParams retryParams = new LinearLayout.LayoutParams(0, dp(48), 1f);
+        retryParams.leftMargin = dp(8);
+        playerControls.addView(retry, retryParams);
+        playerColumn.addView(playerControls, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(52)));
+        TextView hint = text("Media3 plays HLS and progressive streams first. VLC remains an optional backup.", MUTED, 13);
+        playerColumn.addView(hint, wrapWithTop(8));
+
+        LinearLayout guide = pageColumn();
+        guide.setBackground(gradientRound(new int[]{PANEL_LIGHT, PANEL}, Color.rgb(44, 75, 91), 1, 14));
+        guide.setPadding(dp(10), dp(10), dp(10), dp(10));
+        LinearLayout guideHeader = new LinearLayout(this);
+        guideHeader.setGravity(Gravity.CENTER_VERTICAL);
+        TextView guideTitle = text("CHANNEL GUIDE", TEAL, 11);
+        guideTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        guideHeader.addView(guideTitle, new LinearLayout.LayoutParams(0, dp(22), 1f));
+        TextView guideCount = text(visible.size() + " channels", MUTED, 11);
+        guideCount.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        guideHeader.addView(guideCount, wrap());
+        guide.addView(guideHeader, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(24)));
+
+        HorizontalScrollView categoryScroll = new HorizontalScrollView(this);
+        categoryScroll.setHorizontalScrollBarEnabled(false);
+        LinearLayout categories = new LinearLayout(this);
+        categories.setOrientation(LinearLayout.HORIZONTAL);
         Button all = catalogueButton("All Channels");
         all.setSelected("all".equals(selectedCategory));
         all.setBackground(round(all.isSelected() ? PANEL_LIGHT : PANEL,
                 all.isSelected() ? TEAL : PANEL, all.isSelected() ? 2 : 1, 8));
         all.setOnClickListener(view -> { livePinUnlocked = false; selectedCategory = "all"; showLiveScreen(); });
-        categories.addView(all, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
+        categories.addView(all, guideCategoryParams(118));
         for (Category category : catalog.categories) {
             Button item = catalogueButton((category.locked ? "[PIN] " : "") + category.title);
             item.setSelected(category.id.equals(selectedCategory));
@@ -737,53 +784,33 @@ public final class MainActivity extends android.app.Activity {
                     askForPin(() -> { livePinUnlocked = true; selectedCategory = category.id; showLiveScreen(); });
                 } else { selectedCategory = category.id; showLiveScreen(); }
             });
-            categories.addView(item, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
+            categories.addView(item, guideCategoryParams(132));
         }
-        ScrollView categoryScroll = new ScrollView(this);
-        categoryScroll.setVerticalScrollBarEnabled(false);
-        categoryScroll.addView(categories);
+        categoryScroll.addView(categories, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(44)));
+        guide.addView(categoryScroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(48)));
 
-        List<Channel> visible = new ArrayList<>();
-        for (Channel channel : catalog.channels) {
-            if (selectedCategory.equals("all") || selectedCategory.equals(channel.categoryId)) visible.add(channel);
-        }
         ListView channelScroll = new ListView(this);
         channelScroll.setDivider(null);
         channelScroll.setVerticalScrollBarEnabled(false);
+        channelScroll.setPadding(0, dp(4), 0, 0);
         channelScroll.setAdapter(new LiveChannelAdapter(visible));
-        LinearLayout lists = new LinearLayout(this);
-        lists.setOrientation(LinearLayout.HORIZONTAL);
-        lists.addView(categoryScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.30f));
-        lists.addView(channelScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.70f));
-        left.addView(lists, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
-        Button refresh = navButton("Refresh catalogue");
+        guide.addView(channelScroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        Button refresh = catalogueButton("Refresh channels");
         refresh.setOnClickListener(view -> refreshLiveCatalogue(false));
-        left.addView(refresh, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(48)));
-        split.addView(left, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.52f));
+        guide.addView(refresh, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(44)));
 
-        LinearLayout right = pageColumn();
-        right.setPadding(dp(8), 0, 0, 0);
-        playerView = new PlayerView(this);
-        configurePlayerView(playerView);
-        playerView.setVisibility(View.INVISIBLE);
-        FrameLayout playerShell = new FrameLayout(this);
-        playerShell.setBackground(round(Color.BLACK, Color.rgb(31, 58, 79), 1, 14));
-        playerShell.addView(playerView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        playerShell.addView(playerPlaceholder("Select a channel to start playback."),
-                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        right.addView(playerShell, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
-        Button fullscreen = fullscreenButton();
-        right.addView(fullscreen, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(48)));
-        Button retry = navButton("Retry stream");
-        retryPlaybackButton = retry;
-        retry.setEnabled(false);
-        retry.setOnClickListener(view -> retryCurrentPlayback());
-        right.addView(retry, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(48)));
-        TextView hint = text("Select a channel. The built-in Media3 player handles HLS and progressive streams on Android TV.", MUTED, 15);
-        right.addView(hint, wrapWithTop(12));
-        split.addView(right, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.48f));
+        float guideWeight = screenWidthDp() <= 900 ? 0.38f : 0.30f;
+        split.addView(playerColumn, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f - guideWeight));
+        LinearLayout.LayoutParams guideParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, guideWeight);
+        split.addView(guide, guideParams);
         replaceContent(split);
         all.requestFocus();
+    }
+
+    private LinearLayout.LayoutParams guideCategoryParams(int width) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dp(width), dp(44));
+        params.rightMargin = dp(6);
+        return params;
     }
 
     /** Recycles channel rows so changing categories never rebuilds thousands of views on the UI thread. */
