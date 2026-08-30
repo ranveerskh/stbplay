@@ -357,15 +357,22 @@ public final class MainActivity extends android.app.Activity {
         stopPlayback();
         retryPlaybackAction = null;
         root = pageColumn();
-        root.setPadding(dp(24), dp(18), dp(24), dp(18));
+        root.setPadding(dp(20), dp(12), dp(20), dp(14));
 
         LinearLayout header = new LinearLayout(this);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setPadding(dp(4), 0, dp(8), 0);
-        pageTitle = title("STB PLAY", 24);
-        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(0, dp(54), 1f);
-        header.addView(pageTitle, titleParams);
-        pageStatus = text("READY  ·  Android TV", MUTED, 13);
+        header.setPadding(dp(4), 0, dp(6), 0);
+        LinearLayout headerCopy = pageColumn();
+        headerCopy.setGravity(Gravity.CENTER_VERTICAL);
+        headerCopy.setBackgroundColor(Color.TRANSPARENT);
+        TextView headerBrand = text("STB PLAY  /  ANDROID TV", TEAL, 11);
+        headerBrand.setTypeface(null, android.graphics.Typeface.BOLD);
+        headerCopy.addView(headerBrand, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(16)));
+        pageTitle = title("Home", 23);
+        headerCopy.addView(pageTitle, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(30)));
+        header.addView(headerCopy, new LinearLayout.LayoutParams(0, dp(54), 1f));
+        pageStatus = text("READY  ·  CONNECTED", MUTED, 12);
+        pageStatus.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
         header.addView(pageStatus, wrap());
         appHeader = header;
         root.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
@@ -377,7 +384,7 @@ public final class MainActivity extends android.app.Activity {
         body.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout nav = pageColumn();
         nav.setBackground(gradientRound(new int[]{PANEL_LIGHT, PANEL}, TEAL, 1, 16));
-        nav.setPadding(dp(12), dp(16), dp(12), dp(16));
+        nav.setPadding(dp(10), dp(12), dp(10), dp(12));
         LinearLayout brand = new LinearLayout(this);
         brand.setGravity(Gravity.CENTER_VERTICAL);
         ImageView brandLogo = logoImage();
@@ -387,7 +394,7 @@ public final class MainActivity extends android.app.Activity {
         LinearLayout.LayoutParams brandNameParams = new LinearLayout.LayoutParams(0, dp(52), 1f);
         brandNameParams.leftMargin = dp(10);
         brand.addView(brandName, brandNameParams);
-        nav.addView(brand, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(66)));
+        nav.addView(brand, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(60)));
 
         String[] descriptions = {"Home", "Live TV", "Movies & Series", "Continue Watching", "Favourites", "Settings"};
         int[] icons = {
@@ -400,7 +407,7 @@ public final class MainActivity extends android.app.Activity {
         };
         for (int index = 0; index < descriptions.length; index++) {
             Button button = navIconButton(icons[index], descriptions[index]);
-            nav.addView(button, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(56)));
+            nav.addView(button, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(52)));
             if (index == 0) button.setOnClickListener(view -> showHomeScreen());
             if (index == 1) button.setOnClickListener(view -> showLiveScreen());
             if (index == 2) button.setOnClickListener(view -> showVodScreen());
@@ -409,7 +416,9 @@ public final class MainActivity extends android.app.Activity {
             if (index == 5) button.setOnClickListener(view -> showSettings());
         }
         navigationRail = nav;
-        body.addView(nav, new LinearLayout.LayoutParams(dp(224), ViewGroup.LayoutParams.MATCH_PARENT));
+        LinearLayout.LayoutParams navParams = new LinearLayout.LayoutParams(dp(210), ViewGroup.LayoutParams.MATCH_PARENT);
+        navParams.rightMargin = dp(16);
+        body.addView(nav, navParams);
         content = new FrameLayout(this);
         body.addView(content, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         root.addView(body, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
@@ -429,18 +438,18 @@ public final class MainActivity extends android.app.Activity {
         livePinUnlocked = false;
         selectNavigation(0);
         pageTitle.setText("Home");
-        pageStatus.setText("READY  ·  Android TV");
+        pageStatus.setText("READY  ·  CONNECTED");
         LinearLayout page = pageColumn();
-        page.setPadding(dp(26), dp(20), dp(26), dp(24));
-        page.addView(title("Welcome back", 30), wrap());
-        page.addView(text("Your authorised entertainment hub", MUTED, 17), wrapWithTop(5));
+        page.setPadding(dp(22), dp(14), dp(22), dp(22));
+        page.addView(title("Welcome back", 27), wrap());
+        page.addView(text("Your authorised entertainment hub", MUTED, 15), wrapWithTop(4));
         addHomeHero(page);
         LinearLayout cards = new LinearLayout(this);
-        cards.setPadding(0, dp(28), 0, 0);
-        LinearLayout.LayoutParams liveParams = new LinearLayout.LayoutParams(0, dp(150), 1f);
-        liveParams.rightMargin = dp(10);
+        cards.setPadding(0, dp(18), 0, 0);
+        LinearLayout.LayoutParams liveParams = new LinearLayout.LayoutParams(0, dp(116), 1f);
+        liveParams.rightMargin = dp(12);
         cards.addView(infoCard("LIVE TV", "Open your provider's live catalogue", v -> showLiveScreen()), liveParams);
-        cards.addView(infoCard("MOVIES & SERIES", "Open the provider's VOD catalogue", v -> showVodScreen()), new LinearLayout.LayoutParams(0, dp(150), 1f));
+        cards.addView(infoCard("MOVIES & SERIES", "Open the provider's VOD catalogue", v -> showVodScreen()), new LinearLayout.LayoutParams(0, dp(116), 1f));
         page.addView(cards);
         List<WatchProgress> inProgress = visibleWatchProgress();
         List<VodItem> cachedItems = vodCache.loadAll();
@@ -470,38 +479,40 @@ public final class MainActivity extends android.app.Activity {
         LinearLayout hero = new LinearLayout(this);
         hero.setGravity(Gravity.CENTER_VERTICAL);
         hero.setClipChildren(false);
-        hero.setPadding(dp(18), dp(14), dp(18), dp(14));
-        hero.setBackground(gradientRound(new int[]{PANEL_LIGHT, NAVY}, TEAL, 1, 16));
+        hero.setPadding(dp(16), dp(12), dp(16), dp(12));
+        hero.setBackground(gradientRound(new int[]{Color.rgb(27, 48, 68), Color.rgb(8, 20, 34)}, TEAL, 1, 16));
         ImageView heroArt = new ImageView(this);
         heroArt.setImageResource(ca.netplus.stbplay.R.drawable.tv_banner);
-        heroArt.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        heroArt.setScaleType(ImageView.ScaleType.FIT_CENTER);
         heroArt.setBackground(round(PANEL, TEAL, 1, 12));
         heroArt.setPadding(dp(5), dp(5), dp(5), dp(5));
-        hero.addView(heroArt, new LinearLayout.LayoutParams(dp(156), dp(118)));
+        hero.addView(heroArt, new LinearLayout.LayoutParams(dp(136), dp(106)));
         LinearLayout copy = pageColumn();
         copy.setBackgroundColor(Color.TRANSPARENT);
         copy.setPadding(dp(16), 0, dp(12), 0);
         TextView eyebrow = text("STB PLAY  /  CONNECTED", TEAL, 12);
         eyebrow.setTypeface(null, android.graphics.Typeface.BOLD);
         copy.addView(eyebrow, wrap());
-        copy.addView(title("Your entertainment hub", 26), wrapWithTop(6));
-        copy.addView(text(portalDisplayName(), GOLD_BRIGHT, 15), wrapWithTop(6));
-        copy.addView(text("Browse live channels, discover titles and continue exactly where you stopped.", TEXT, 16), wrapWithTop(10));
+        copy.addView(title("Your entertainment hub", 22), wrapWithTop(5));
+        copy.addView(text(portalDisplayName(), GOLD_BRIGHT, 14), wrapWithTop(5));
+        TextView description = text("Live channels, films and series — all in one place.", TEXT, 14);
+        description.setMaxLines(2);
+        copy.addView(description, wrapWithTop(8));
         hero.addView(copy, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         LinearLayout ready = pageColumn();
         ready.setGravity(Gravity.CENTER);
-        ready.setPadding(dp(10), dp(8), dp(10), dp(8));
-        ready.setBackground(round(Color.argb(90, 7, 16, 27), TEAL, 1, 12));
-        TextView readyLabel = text("READY", TEAL, 12);
+        ready.setPadding(dp(8), dp(8), dp(8), dp(8));
+        ready.setBackground(round(Color.argb(110, 7, 16, 27), TEAL, 1, 12));
+        TextView readyLabel = text("CONNECTED", TEAL, 10);
         readyLabel.setGravity(Gravity.CENTER);
         readyLabel.setTypeface(null, android.graphics.Typeface.BOLD);
         ready.addView(readyLabel, wrap());
-        TextView readyValue = text("PLAY", TEXT, 22);
+        TextView readyValue = text("WATCH", TEXT, 17);
         readyValue.setGravity(Gravity.CENTER);
         readyValue.setTypeface(null, android.graphics.Typeface.BOLD);
         ready.addView(readyValue, wrapWithTop(2));
-        hero.addView(ready, new LinearLayout.LayoutParams(dp(92), dp(82)));
-        page.addView(hero, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(176)));
+        hero.addView(ready, new LinearLayout.LayoutParams(dp(104), dp(76)));
+        page.addView(hero, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(154)));
     }
 
     private void addHomeContinueShelf(LinearLayout page, List<WatchProgress> entries) {
@@ -549,7 +560,7 @@ public final class MainActivity extends android.app.Activity {
     private LinearLayout vodShelfCard(VodItem item) {
         LinearLayout card = pageColumn();
         card.setBackground(round(PANEL, PANEL, 1, 8));
-        card.addView(posterBlock(item, dp(58)), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(58)));
+        card.addView(posterBlock(item, dp(58), false), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(58)));
         Button label = navButton(item.title + "\n" + vodMetadata(item));
         label.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
         label.setTextSize(sp(12));
@@ -626,16 +637,26 @@ public final class MainActivity extends android.app.Activity {
         card.setFocusable(true);
         card.setFocusableInTouchMode(true);
         card.setClickable(true);
-        card.setPadding(dp(20), dp(16), dp(20), dp(14));
+        card.setPadding(dp(18), dp(14), dp(18), dp(12));
         card.setBackground(round(muted ? PANEL : PANEL_LIGHT, TEAL, 1, 14));
+        int iconRes = "LIVE TV".equals(heading)
+                ? ca.netplus.stbplay.R.drawable.ic_nav_live
+                : ca.netplus.stbplay.R.drawable.ic_nav_movies;
+        ImageView icon = new ImageView(this);
+        icon.setImageResource(iconRes);
+        icon.setColorFilter(TEAL);
+        icon.setPadding(dp(5), dp(5), dp(5), dp(5));
+        icon.setContentDescription(heading);
+        card.addView(icon, new FrameLayout.LayoutParams(dp(44), dp(44), Gravity.LEFT | Gravity.CENTER_VERTICAL));
         LinearLayout copy = pageColumn();
         copy.setBackgroundColor(Color.TRANSPARENT);
+        copy.setPadding(dp(58), 0, dp(30), 0);
         TextView eyebrow = text("OPEN NOW", TEAL, 12);
         eyebrow.setTypeface(null, android.graphics.Typeface.BOLD);
         copy.addView(eyebrow, wrap());
-        TextView headingView = title(heading, 19);
+        TextView headingView = title(heading, 18);
         copy.addView(headingView, wrapWithTop(5));
-        TextView subtitleView = text(subtitle, MUTED, 14);
+        TextView subtitleView = text(subtitle, MUTED, 13);
         subtitleView.setMaxLines(2);
         copy.addView(subtitleView, wrapWithTop(5));
         card.addView(copy, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -699,14 +720,14 @@ public final class MainActivity extends android.app.Activity {
         left.setPadding(dp(6), 0, dp(18), 0);
         LinearLayout categories = pageColumn();
         categories.setPadding(0, 0, dp(8), dp(8));
-        Button all = navButton("All Channels");
+        Button all = catalogueButton("All Channels");
         all.setSelected("all".equals(selectedCategory));
         all.setBackground(round(all.isSelected() ? PANEL_LIGHT : PANEL,
                 all.isSelected() ? TEAL : PANEL, all.isSelected() ? 2 : 1, 8));
         all.setOnClickListener(view -> { livePinUnlocked = false; selectedCategory = "all"; showLiveScreen(); });
         categories.addView(all, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(54)));
         for (Category category : catalog.categories) {
-            Button item = navButton((category.locked ? "[PIN] " : "") + category.title);
+            Button item = catalogueButton((category.locked ? "[PIN] " : "") + category.title);
             item.setSelected(category.id.equals(selectedCategory));
             item.setBackground(round(item.isSelected() ? PANEL_LIGHT : PANEL,
                     item.isSelected() ? TEAL : PANEL, item.isSelected() ? 2 : 1, 8));
@@ -732,8 +753,8 @@ public final class MainActivity extends android.app.Activity {
         channelScroll.setAdapter(new LiveChannelAdapter(visible));
         LinearLayout lists = new LinearLayout(this);
         lists.setOrientation(LinearLayout.HORIZONTAL);
-        lists.addView(categoryScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.34f));
-        lists.addView(channelScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.66f));
+        lists.addView(categoryScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.30f));
+        lists.addView(channelScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.70f));
         left.addView(lists, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         Button refresh = navButton("Refresh catalogue");
         refresh.setOnClickListener(view -> refreshLiveCatalogue(false));
@@ -744,6 +765,7 @@ public final class MainActivity extends android.app.Activity {
         right.setPadding(dp(8), 0, 0, 0);
         playerView = new PlayerView(this);
         configurePlayerView(playerView);
+        playerView.setVisibility(View.INVISIBLE);
         FrameLayout playerShell = new FrameLayout(this);
         playerShell.setBackground(round(Color.BLACK, Color.rgb(31, 58, 79), 1, 14));
         playerShell.addView(playerView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -901,10 +923,18 @@ public final class MainActivity extends android.app.Activity {
         vlcFallbackAttempted = false;
         if (activeStream.isEmpty()) {
             pageStatus.setText("Playback unavailable");
+            if (playerView != null) playerView.setVisibility(View.INVISIBLE);
+            if (playerEmptyState != null) playerEmptyState.setVisibility(View.VISIBLE);
+            if (playerEmptyMessage != null) playerEmptyMessage.setText("The portal did not provide a playable stream.");
             Toast.makeText(this, "The portal did not provide a playable stream.", Toast.LENGTH_LONG).show();
             return;
         }
-        if (playerEmptyState != null) playerEmptyState.setVisibility(View.GONE);
+        // PlayerView uses a SurfaceView on many Android TV devices. Keep it
+        // invisible until Media3 is actually ready, otherwise its black
+        // surface sits above the branded empty/loading state.
+        playerView.setVisibility(View.INVISIBLE);
+        if (playerEmptyMessage != null) playerEmptyMessage.setText("Opening the authorised stream…");
+        if (playerEmptyState != null) playerEmptyState.setVisibility(View.VISIBLE);
         DefaultHttpDataSource.Factory http = new DefaultHttpDataSource.Factory()
                 .setUserAgent("Mozilla/5.0 (Android TV; STB PLAY)")
                 .setConnectTimeoutMs(12_000)
@@ -924,6 +954,8 @@ public final class MainActivity extends android.app.Activity {
                 if (state == Player.STATE_BUFFERING) scheduleVlcFallback(8000L);
                 else if (state == Player.STATE_READY) {
                     cancelVlcFallback();
+                    playerView.setVisibility(View.VISIBLE);
+                    if (playerEmptyState != null) playerEmptyState.setVisibility(View.GONE);
                     if (retryPlaybackButton != null) retryPlaybackButton.setEnabled(true);
                 }
                 else if (state == Player.STATE_ENDED) {
@@ -936,6 +968,7 @@ public final class MainActivity extends android.app.Activity {
 
             @Override public void onPlayerError(PlaybackException error) {
                 pageStatus.setText("Native player could not open this stream · trying backup…");
+                playerView.setVisibility(View.INVISIBLE);
                 if (playerEmptyMessage != null) playerEmptyMessage.setText("Native playback failed. Trying the backup player…");
                 if (playerEmptyState != null) playerEmptyState.setVisibility(View.VISIBLE);
                 if (retryPlaybackButton != null) retryPlaybackButton.setEnabled(true);
@@ -1068,7 +1101,7 @@ public final class MainActivity extends android.app.Activity {
         categoryScroll.setVerticalScrollBarEnabled(false);
         categoryScroll.addView(categories);
         for (VodCategory category : vodCategories) {
-            Button button = navButton((category.locked ? "[PIN] " : "") + category.title);
+            Button button = catalogueButton((category.locked ? "[PIN] " : "") + category.title);
             button.setSelected(selectedVodCategory != null && category.id.equals(selectedVodCategory.id));
             button.setBackground(round(button.isSelected() ? PANEL_LIGHT : PANEL,
                     button.isSelected() ? TEAL : PANEL, button.isSelected() ? 2 : 1, 8));
@@ -1085,12 +1118,14 @@ public final class MainActivity extends android.app.Activity {
         browse.setPadding(dp(4), 0, 0, 0);
         LinearLayout searchRow = new LinearLayout(this);
         searchRow.setGravity(Gravity.CENTER_VERTICAL);
-        vodSearchField = field("Search title, original title, genre, language or year", vodSearchQuery);
+        vodSearchField = field(screenWidthDp() <= 1200
+                ? "Search titles, genres or year"
+                : "Search titles, original title, genre, language or year", vodSearchQuery);
         vodSearchField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         searchRow.addView(vodSearchField, new LinearLayout.LayoutParams(0, dp(54), 1f));
         Button refresh = navButton("Refresh");
         refresh.setOnClickListener(view -> loadVodPage(true));
-        LinearLayout.LayoutParams refreshParams = new LinearLayout.LayoutParams(dp(130), dp(54));
+        LinearLayout.LayoutParams refreshParams = new LinearLayout.LayoutParams(dp(112), dp(54));
         refreshParams.leftMargin = dp(10);
         searchRow.addView(refresh, refreshParams);
         browse.addView(searchRow, wrapWithTop(5));
@@ -1112,8 +1147,8 @@ public final class MainActivity extends android.app.Activity {
         browse.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         LinearLayout browseShell = new LinearLayout(this);
         browseShell.setOrientation(LinearLayout.HORIZONTAL);
-        browseShell.addView(categoryScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.22f));
-        browseShell.addView(browse, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.78f));
+        browseShell.addView(categoryScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.24f));
+        browseShell.addView(browse, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.76f));
         page.addView(browseShell, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         replaceContent(page);
         renderVodItems();
@@ -1213,11 +1248,11 @@ public final class MainActivity extends android.app.Activity {
                 for (int index = start; index < end; index++) {
                     VodItem item = visibleItems.get(index);
                     LinearLayout card = vodGridCard(item);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dp(178), 1f);
-                    params.rightMargin = dp(10);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dp(174), 1f);
+                    params.rightMargin = dp(12);
                     row.addView(card, params);
                 }
-                vodItemsContainer.addView(row, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(186)));
+                vodItemsContainer.addView(row, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(184)));
             }
         }
         Button more = navButton(vodItemsLoading ? "Loading…" : "Load more titles");
@@ -1232,11 +1267,17 @@ public final class MainActivity extends android.app.Activity {
         card.setPadding(dp(2), dp(2), dp(2), dp(2));
         card.setFocusable(true);
         card.setClickable(true);
-        card.addView(posterBlock(item, dp(128)), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(128)));
+        card.addView(posterBlock(item, dp(116), false), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(116)));
         TextView label = text((VodPolicy.isRestricted(item) ? "[PIN] " : "") + item.title, TEXT, 13);
-        label.setMaxLines(2);
+        label.setMaxLines(1);
+        label.setEllipsize(android.text.TextUtils.TruncateAt.END);
         label.setPadding(dp(8), dp(5), dp(8), 0);
-        card.addView(label, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(42)));
+        card.addView(label, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(28)));
+        TextView metadata = text(vodCardMetadata(item), MUTED, 10);
+        metadata.setMaxLines(1);
+        metadata.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        metadata.setPadding(dp(8), 0, dp(8), dp(4));
+        card.addView(metadata, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(24)));
         card.setOnFocusChangeListener((view, hasFocus) -> view.setBackground(round(hasFocus ? PANEL_LIGHT : PANEL,
                 hasFocus ? TEAL : PANEL, hasFocus ? 2 : 1, 8)));
         card.setOnClickListener(view -> {
@@ -1258,7 +1299,7 @@ public final class MainActivity extends android.app.Activity {
     private void addVodItemRow(LinearLayout container, VodItem item, boolean showFavorite) {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.addView(posterBlock(item, dp(104)), new LinearLayout.LayoutParams(dp(82), dp(104)));
+        row.addView(posterBlock(item, dp(104), false), new LinearLayout.LayoutParams(dp(82), dp(104)));
         Button card = navButton((VodPolicy.isRestricted(item) ? "[PIN] " : "") + item.title + "\n" + vodMetadata(item));
         card.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
         card.setTextSize(sp(16));
@@ -1298,6 +1339,10 @@ public final class MainActivity extends android.app.Activity {
      * falsely makes the catalogue look empty and unfinished.
      */
     private FrameLayout posterBlock(VodItem item, int height) {
+        return posterBlock(item, height, true);
+    }
+
+    private FrameLayout posterBlock(VodItem item, int height, boolean showOverlayTitle) {
         FrameLayout frame = new FrameLayout(this);
         frame.setBackground(round(PANEL_LIGHT, PANEL_LIGHT, 1, 8));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) frame.setClipToOutline(true);
@@ -1309,15 +1354,17 @@ public final class MainActivity extends android.app.Activity {
         frame.addView(poster, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        TextView label = text(item.title, TEXT, 11);
-        label.setMaxLines(2);
-        label.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        label.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-        label.setPadding(dp(8), dp(2), dp(8), dp(2));
-        label.setBackgroundColor(Color.argb(190, Color.red(NAVY), Color.green(NAVY), Color.blue(NAVY)));
-        FrameLayout.LayoutParams labelParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(31), Gravity.BOTTOM);
-        frame.addView(label, labelParams);
+        if (showOverlayTitle) {
+            TextView label = text(item.title, TEXT, 11);
+            label.setMaxLines(2);
+            label.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            label.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+            label.setPadding(dp(8), dp(2), dp(8), dp(2));
+            label.setBackgroundColor(Color.argb(190, Color.red(NAVY), Color.green(NAVY), Color.blue(NAVY)));
+            FrameLayout.LayoutParams labelParams = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(31), Gravity.BOTTOM);
+            frame.addView(label, labelParams);
+        }
         return frame;
     }
 
@@ -1341,6 +1388,14 @@ public final class MainActivity extends android.app.Activity {
         String metadata = kind + (item.year.isEmpty() ? "" : " · " + item.year)
                 + (item.language.isEmpty() ? "" : " · " + item.language)
                 + (item.genre.isEmpty() ? "" : "\n" + item.genre);
+        return metadata;
+    }
+
+    private String vodCardMetadata(VodItem item) {
+        String kind = item.isSeries ? "SERIES" : "MOVIE";
+        String metadata = kind;
+        if (!item.year.isEmpty()) metadata += " · " + item.year;
+        if (!item.language.isEmpty()) metadata += " · " + item.language;
         return metadata;
     }
 
@@ -1908,6 +1963,7 @@ public final class MainActivity extends android.app.Activity {
         page.setPadding(dp(24), dp(16), dp(24), dp(16));
         playerView = new PlayerView(this);
         configurePlayerView(playerView);
+        playerView.setVisibility(View.INVISIBLE);
         FrameLayout playerShell = new FrameLayout(this);
         playerShell.setBackground(round(Color.BLACK, Color.rgb(31, 58, 79), 1, 14));
         playerShell.addView(playerView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -2712,9 +2768,10 @@ public final class MainActivity extends android.app.Activity {
         if (appHeader != null) appHeader.setVisibility(enabled ? View.GONE : View.VISIBLE);
         if (navigationRail != null) navigationRail.setVisibility(enabled ? View.GONE : View.VISIBLE);
         if (root != null) {
-            int padding = enabled ? 0 : dp(24);
-            int vertical = enabled ? 0 : dp(18);
-            root.setPadding(padding, vertical, padding, vertical);
+            int horizontal = enabled ? 0 : dp(20);
+            int top = enabled ? 0 : dp(12);
+            int bottom = enabled ? 0 : dp(14);
+            root.setPadding(horizontal, top, horizontal, bottom);
         }
         if (fullscreenToggle != null) fullscreenToggle.setText(enabled ? "Exit Fullscreen" : "Fullscreen");
         int immersive = View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -2723,7 +2780,10 @@ public final class MainActivity extends android.app.Activity {
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-        getWindow().getDecorView().setSystemUiVisibility(enabled ? immersive : 0);
+        // Android TV apps should own the full canvas. Keeping the shell
+        // immersive also prevents phone/emulator status and navigation bars
+        // from making the TV layout look cropped during QA.
+        getWindow().getDecorView().setSystemUiVisibility(immersive);
     }
 
     private void stopPlayback() {
@@ -2933,6 +2993,17 @@ public final class MainActivity extends android.app.Activity {
         return button;
     }
 
+    /** Compact single-line control used by long provider category names. */
+    private Button catalogueButton(String label) {
+        Button button = navButton(label);
+        button.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        button.setTextSize(sp(13));
+        button.setMaxLines(1);
+        button.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        button.setPadding(dp(10), 0, dp(8), 0);
+        return button;
+    }
+
     private GradientDrawable round(int fill, int stroke, int width, int radius) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(fill);
@@ -2985,9 +3056,10 @@ public final class MainActivity extends android.app.Activity {
 
     private int vodGridColumnCount() {
         int width = screenWidthDp();
+        if (width <= 900) return 2;
         if (width <= 1366) return 3;
-        if (width <= 1700) return 4;
-        if (width <= 2300) return 5;
+        if (width <= 1900) return 4;
+        if (width <= 2600) return 5;
         return 6;
     }
 
