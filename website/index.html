@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="STB PLAY is a free Stalker portal player for compatible Android devices. Download the app and use your own authorised provider access.">
+  <title>STB PLAY — Free Stalker Portal Player</title>
+  <link rel="icon" type="image/png" href="assets/logos/stb-play-blue.webp">
+  <style>
+    :root{color-scheme:dark;--bg:#0b1020;--panel:#121a2c;--panel2:#18243a;--line:#293751;--gold:#ffcc60;--text:#f4f6fb;--muted:#b4bfd1;--blue:#4b8cff;--radius:22px;--max:1160px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;background:radial-gradient(ellipse at 82% 3%,rgba(38,77,140,.2),transparent 34rem),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}a{color:inherit;text-decoration:none}button{font:inherit}.wrap{width:min(var(--max),calc(100% - 40px));margin:auto}.skip{position:absolute;left:-999px;top:0}.skip:focus{left:12px;top:12px;background:#fff;color:#111;padding:10px 14px;z-index:20;border-radius:8px}
+    header{position:sticky;top:0;z-index:10;background:rgba(11,16,32,.9);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.07)}.nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.02em}.brand img{width:43px;height:43px;object-fit:contain;border-radius:12px}.brand span{font-size:1.05rem}.brand b{color:var(--gold)}.navlinks{display:flex;align-items:center;gap:28px;color:var(--muted);font-size:.94rem}.navlinks a:hover,.navlinks a:focus-visible{color:var(--gold)}.navlinks .nav-cta{color:#111;background:var(--gold);padding:10px 17px;border-radius:999px;font-weight:750}.menu-toggle{display:none;background:transparent;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 12px}
+    .hero{padding:78px 0 62px}.hero-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:50px;align-items:center}.eyebrow{display:inline-flex;align-items:center;gap:9px;color:var(--gold);font-weight:750;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase}.eyebrow:before{content:"";width:24px;height:2px;background:var(--gold)}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2.55rem,5.3vw,4.55rem);line-height:1.02;letter-spacing:-.055em;margin:20px 0 20px;max-width:680px}h1 span{color:var(--gold)}.hero-copy{font-size:1.12rem;color:var(--muted);max-width:570px}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin:27px 0 17px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 19px;border-radius:13px;font-weight:780;border:1px solid transparent;transition:transform .18s,background .18s,border-color .18s}.btn:hover{transform:translateY(-2px)}.btn:focus-visible,.navlinks a:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #fff;outline-offset:3px}.btn-primary{background:var(--gold);color:#111827}.btn-secondary{border-color:#52617a;background:rgba(255,255,255,.04)}.btn-small{padding:10px 14px;font-size:.92rem}.hero-note{display:flex;align-items:center;gap:10px;color:#d3dbea;font-size:.9rem}.check{display:inline-grid;place-items:center;width:21px;height:21px;border-radius:50%;background:rgba(77,190,138,.15);color:#7ee0b2;font-weight:900}.hero-visual{position:relative}.hero-visual img{display:block;width:100%;border-radius:20px;border:1px solid #43516c;box-shadow:0 28px 80px rgba(0,0,0,.42)}.screen-label{position:absolute;left:18px;bottom:18px;padding:7px 11px;border-radius:999px;background:rgba(7,12,24,.78);border:1px solid rgba(255,255,255,.17);font-size:.78rem;color:#e4e8f0}
+    .trust-strip{border-block:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025)}.trust-row{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 35px;padding:17px 0;color:#d6dfed;font-size:.93rem}.trust-row strong{color:var(--gold)}
+    section{padding:78px 0}.section-head{max-width:680px;margin:0 auto 34px;text-align:center}.section-kicker{font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:.13em;font-weight:780}.section-head h2{font-size:clamp(1.9rem,3.5vw,2.8rem);letter-spacing:-.035em;line-height:1.1;margin:10px 0 13px}.section-head p{color:var(--muted);margin-bottom:0}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.feature{padding:23px;border:1px solid var(--line);background:linear-gradient(145deg,rgba(24,36,58,.88),rgba(17,25,42,.8));border-radius:18px}.feature-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:rgba(255,204,96,.1);color:var(--gold);font-size:1.12rem;margin-bottom:15px}.feature h3{font-size:1.08rem;margin-bottom:6px}.feature p{color:var(--muted);font-size:.94rem;margin:0}
+    .device-section{background:linear-gradient(180deg,transparent,rgba(18,26,44,.62),transparent)}.device-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:13px}.device{min-height:158px;border:1px solid var(--line);border-radius:18px;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 12px;gap:11px}.device img{width:46px;height:46px;object-fit:contain}.device strong{font-size:.94rem}.device small{display:block;color:var(--muted);font-size:.78rem;line-height:1.4;margin-top:3px}.device-note{text-align:center;color:var(--muted);font-size:.9rem;margin:20px auto 0;max-width:760px}
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.shot{appearance:none;border:1px solid var(--line);padding:0;background:#10182a;border-radius:16px;overflow:hidden;text-align:left;color:var(--text);cursor:zoom-in}.shot img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#121a2c;transition:transform .35s}.shot:hover img{transform:scale(1.025)}.shot-caption{display:block;padding:12px 14px;font-size:.9rem;font-weight:700}.gallery-note{color:var(--muted);font-size:.86rem;text-align:center;margin:18px 0 0}
+    .download-shell{display:grid;grid-template-columns:1fr 1fr;gap:17px;align-items:stretch}.download-card{padding:28px;border-radius:var(--radius);border:1px solid var(--line);background:linear-gradient(155deg,#18243a,#111a2d)}.download-card.featured{border-color:rgba(255,204,96,.57);box-shadow:0 18px 60px rgba(255,204,96,.055)}.download-top{display:flex;align-items:center;gap:13px;margin-bottom:18px}.download-top img{width:42px;height:42px}.download-top h3{margin:0;font-size:1.23rem}.download-card p{color:var(--muted);font-size:.94rem}.download-card .btn{margin-top:7px}.mini-label{display:inline-block;color:var(--gold);font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.platform-pills{display:flex;flex-wrap:wrap;gap:7px;margin:17px 0}.pill{border:1px solid #35445f;border-radius:999px;padding:5px 10px;color:#d2dbea;font-size:.78rem}.steps{list-style:none;padding:0;margin:14px 0 18px;counter-reset:steps}.steps li{counter-increment:steps;position:relative;padding:0 0 0 37px;margin:10px 0;color:#d9e1ee;font-size:.9rem}.steps li:before{content:counter(steps);position:absolute;left:0;top:0;width:25px;height:25px;border:1px solid #53637f;border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:.76rem;font-weight:800}.code-box{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;border:1px dashed #697b98;background:#0d1424;border-radius:13px;margin:16px 0}.code-box span{font-size:.76rem;color:var(--muted)}.code-box strong{font-size:1.3rem;letter-spacing:.13em;color:var(--gold);font-variant-numeric:tabular-nums}.copy-btn{border:1px solid #52617a;border-radius:9px;padding:8px 10px;background:transparent;color:var(--text);cursor:pointer;font-size:.82rem}.fine-print{font-size:.8rem!important;color:#aeb9ca!important;margin-top:14px!important}
+    .disclaimer{padding:29px;border:1px solid rgba(255,204,96,.27);background:rgba(255,204,96,.055);border-radius:20px}.disclaimer h2{font-size:1.45rem;margin-bottom:12px}.disclaimer p,.disclaimer li{color:#d3dbea;font-size:.92rem}.disclaimer ul{padding-left:21px;margin-bottom:0}.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}details{border:1px solid var(--line);border-radius:15px;background:var(--panel);padding:17px 19px}summary{font-weight:730;cursor:pointer}details p{color:var(--muted);font-size:.9rem;margin:11px 0 0}footer{border-top:1px solid rgba(255,255,255,.08);padding:28px 0 36px;color:var(--muted);font-size:.85rem}.footer-row{display:flex;justify-content:space-between;gap:18px;align-items:center}.footer-brand{display:flex;align-items:center;gap:9px;color:var(--text);font-weight:750}.footer-brand img{width:29px;height:29px;border-radius:8px}.modal{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(3,6,14,.9)}.modal.open{display:flex}.modal img{max-width:min(1200px,96vw);max-height:88vh;border-radius:12px;box-shadow:0 22px 90px #000}.modal-close{position:absolute;right:20px;top:18px;background:#172238;border:1px solid #66748d;color:#fff;border-radius:50%;width:44px;height:44px;font-size:1.35rem;cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:32px}.hero{padding-top:57px}.hero-visual{max-width:740px}.device-grid{grid-template-columns:repeat(3,1fr)}.feature-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){.wrap{width:min(100% - 28px,var(--max))}.nav{height:66px}.brand img{width:38px;height:38px}.menu-toggle{display:block}.navlinks{display:none;position:absolute;top:65px;left:0;right:0;padding:14px 18px 18px;background:#0d1424;border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;gap:4px}.navlinks.open{display:flex}.navlinks a{padding:10px 8px}.navlinks .nav-cta{text-align:center;margin-top:7px}.hero{padding:48px 0 44px}.hero-copy{font-size:1rem}.hero-actions{display:grid;grid-template-columns:1fr}.hero-actions .btn{width:100%}.hero-visual img{border-radius:15px}.screen-label{left:10px;bottom:10px;font-size:.7rem}.trust-row{justify-content:flex-start;gap:8px 16px;font-size:.84rem}section{padding:59px 0}.section-head{margin-bottom:26px}.feature-grid,.gallery-grid,.download-shell,.faq-grid{grid-template-columns:1fr}.feature{padding:20px}.device-grid{grid-template-columns:repeat(2,1fr);gap:10px}.device{min-height:135px}.download-card{padding:22px}.footer-row{align-items:flex-start;flex-direction:column}.code-box{flex-wrap:wrap}.code-box>div{flex:1}.shot img{aspect-ratio:16/10}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#home" aria-label="STB PLAY home"><img src="assets/logos/stb-play-blue.webp" alt=""><span>STB <b>PLAY</b></span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navlinks">Menu</button>
+      <nav class="navlinks" id="navlinks" aria-label="Main navigation">
+        <a href="#features">Features</a><a href="#devices">Devices</a><a href="#screenshots">Screenshots</a><a href="#disclaimer">Disclaimer</a><a class="nav-cta" href="#downloads">Download free</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero" id="home">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">A free Stalker portal player</div>
+          <h1>Your screen.<br><span>Your portal.</span><br>Your player.</h1>
+          <p class="hero-copy">STB PLAY is a player for compatible devices. Connect your own authorised Stalker portal and use the access provided by your service provider.</p>
+          <div class="hero-actions"><a class="btn btn-primary" href="#downloads">Get STB PLAY <span aria-hidden="true">↓</span></a><a class="btn btn-secondary" href="#screenshots">Explore the app</a></div>
+          <div class="hero-note"><span class="check" aria-hidden="true">✓</span><span><strong>Free to download.</strong> No STB PLAY membership or activation key.</span></div>
+        </div>
+        <div class="hero-visual"><img src="assets/screens/screen-home.webp" alt="STB PLAY interface preview showing a home screen on a dark theme" fetchpriority="high"><span class="screen-label">Interface preview · sample artwork</span></div>
+      </div>
+    </section>
+    <div class="trust-strip"><div class="wrap trust-row"><span><strong>Free</strong> app</span><span>Android APK</span><span>Fire TV / Firestick install guide</span><span>Windows installer</span></div></div>
+
+    <section id="features">
+      <div class="wrap">
+        <div class="section-head"><div class="section-kicker">Made for easy browsing</div><h2>Everything in one simple player</h2><p>Use your compatible portal to browse and play the content you are authorised to access.</p></div>
+        <div class="feature-grid">
+          <article class="feature"><div class="feature-icon" aria-hidden="true">▶</div><h3>Stalker portal player</h3><p>Connect a compatible Stalker portal using details supplied by your provider.</p></article>
+          <article class="feature"><div class="feature-icon" aria-hidden="true">▣</div><h3>Live TV</h3><p>Browse live channels available through your own connected portal.</p></article>
+          <article class="feature"><div class="feature-icon" aria-hidden="true">▤</div><h3>Movies &amp; series</h3><p>Explore the movie and series sections provided by your portal.</p></article>
+          <article class="feature"><div class="feature-icon" aria-hidden="true">⌕</div><h3>Search and saved items</h3><p>Find titles and keep favourites handy in the app.</p></article>
+          <article class="feature"><div class="feature-icon" aria-hidden="true">◐</div><h3>Theme choices</h3><p>Choose from different visual themes shown in the app interface.</p></article>
+          <article class="feature"><div class="feature-icon" aria-hidden="true">⌁</div><h3>Cast option</h3><p>Cast controls appear where supported by the device and playback setup.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="device-section" id="devices">
+      <div class="wrap">
+        <div class="section-head"><div class="section-kicker">One Android download</div><h2>Choose your device</h2><p>The Android APK is the same download for compatible phones, tablets, TVs, TV boxes, Fire TV devices and Meta Quest headsets.</p></div>
+        <div class="device-grid">
+          <div class="device"><img src="assets/icons/smartphone.svg" alt=""><div><strong>Android phone</strong><small>Touch-friendly screen</small></div></div>
+          <div class="device"><img src="assets/icons/tablet.svg" alt=""><div><strong>Android tablet</strong><small>Same APK download</small></div></div>
+          <div class="device"><img src="assets/icons/tv-minimal-play.svg" alt=""><div><strong>Android TV</strong><small>TV and streaming boxes</small></div></div>
+          <div class="device"><img src="assets/icons/tv-minimal-play.svg" alt=""><div><strong>Fire TV / Firestick</strong><small>Use Downloader code 6068753</small></div></div>
+          <div class="device"><img src="assets/icons/rectangle-goggles.svg" alt=""><div><strong>Meta Quest / VR</strong><small>Android APK · compatibility varies</small></div></div>
+        </div>
+        <p class="device-note">Device compatibility can vary by model, Android version, screen layout and installation method. The Windows app has its own installer below.</p>
+      </div>
+    </section>
+
+    <section id="screenshots">
+      <div class="wrap">
+        <div class="section-head"><div class="section-kicker">Take a look inside</div><h2>A clear, familiar layout</h2><p>Browse the app screens below. Tap any image to view it larger.</p></div>
+        <div class="gallery-grid">
+          <button class="shot" type="button" data-image="assets/screens/screen-live-tv.webp" aria-label="View Live TV screenshot larger"><img src="assets/screens/screen-live-tv.webp" alt="Live TV screen preview with portal required note" loading="lazy"><span class="shot-caption">Live TV</span></button>
+          <button class="shot" type="button" data-image="assets/screens/screen-movies.webp" aria-label="View Movies and Series screenshot larger"><img src="assets/screens/screen-movies.webp" alt="Movies and series browsing screen preview with sample artwork" loading="lazy"><span class="shot-caption">Movies &amp; series</span></button>
+          <button class="shot" type="button" data-image="assets/screens/screen-home.webp" aria-label="View home screen screenshot larger"><img src="assets/screens/screen-home.webp" alt="Home screen preview on a dark theme" loading="lazy"><span class="shot-caption">Home screen</span></button>
+          <button class="shot" type="button" data-image="assets/screens/screen-details.webp" aria-label="View title details screenshot larger"><img src="assets/screens/screen-details.webp" alt="Title details screen preview with sample movie artwork" loading="lazy"><span class="shot-caption">Title details</span></button>
+          <button class="shot" type="button" data-image="assets/screens/screen-themes.webp" aria-label="View theme options screenshot larger"><img src="assets/screens/screen-themes.webp" alt="Theme choices preview in dark, blue, black and light styles" loading="lazy"><span class="shot-caption">Theme choices</span></button>
+          <button class="shot" type="button" data-image="assets/screens/screen-meta-quest.webp" aria-label="View Meta Quest presentation mockup larger"><img src="assets/screens/screen-meta-quest.webp" alt="Meta Quest presentation mockup showing the STB PLAY interface" loading="lazy"><span class="shot-caption">Meta Quest presentation</span></button>
+        </div>
+        <p class="gallery-note">Interface previews only. Sample titles and artwork are illustrative; STB PLAY does not supply this or other media content.</p>
+      </div>
+    </section>
+
+    <section id="downloads" class="device-section">
+      <div class="wrap">
+        <div class="section-head"><div class="section-kicker">Free downloads</div><h2>Get STB PLAY</h2><p>No payment, membership or STB PLAY activation key is required to download the app.</p></div>
+        <div class="download-shell">
+          <article class="download-card featured">
+            <div class="download-top"><img src="assets/icons/download.svg" alt=""><div><span class="mini-label">Android · Fire TV · VR</span><h3>Android app</h3></div></div>
+            <p>Download the APK for compatible Android phones, tablets, Android TV devices, TV boxes, Fire TV / Firestick and Meta Quest.</p>
+            <div class="platform-pills"><span class="pill">Phone &amp; tablet</span><span class="pill">Android TV / box</span><span class="pill">Fire TV</span><span class="pill">Meta Quest</span></div>
+            <a class="btn btn-primary" href="https://github.com/ranveerskh/stbpplayvr/releases/download/v2.10.26.5/STB-PLAY-Android-v2.10.26.5.apk" target="_blank" rel="noopener noreferrer">Download Android APK <span aria-hidden="true">↓</span></a>
+            <p class="fine-print">After download, open the APK and follow your device’s install prompts. Your device may ask you to allow installs from the app you used to download it.</p>
+            <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+            <span class="mini-label">Alternative for TV devices</span>
+            <p><strong>Fire TV / Firestick / Android TV:</strong> open the Downloader app and enter this code.</p>
+            <div class="code-box"><div><span>Downloader app code</span><br><strong id="downloader-code">6068753</strong></div><button class="copy-btn" type="button" id="copy-code">Copy code</button></div>
+            <ol class="steps"><li>Install or open Downloader from your device’s app store.</li><li>Enter <strong>6068753</strong> in Downloader and continue.</li><li>Follow the download and installation prompts on screen.</li></ol>
+            <p class="fine-print">Only install apps you trust. The exact steps and available app stores vary by device.</p>
+          </article>
+          <article class="download-card">
+            <div class="download-top"><img src="assets/icons/laptop.svg" alt=""><div><span class="mini-label">Windows</span><h3>Windows app</h3></div></div>
+            <p>Download the Windows installer for a compatible laptop or desktop computer.</p>
+            <div class="platform-pills"><span class="pill">Windows installer</span><span class="pill">.exe file</span><span class="pill">Free to download</span></div>
+            <a class="btn btn-secondary" href="https://github.com/ranveerskh/netplus-player/releases/download/v1.8.16/Netplus-IPTV-Player-Setup-1.8.16.exe" target="_blank" rel="noopener noreferrer">Download Windows app <span aria-hidden="true">↓</span></a>
+            <p class="fine-print">Windows installation prompts and compatibility depend on your PC and Windows version.</p>
+            <div style="margin-top:27px;padding-top:18px;border-top:1px solid var(--line)"><span class="mini-label">Before you install</span><p>STB PLAY is a player. You need your own compatible portal and authorised access from your provider to load content.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="disclaimer">
+      <div class="wrap">
+        <div class="disclaimer">
+          <h2>Important: player only</h2>
+          <p>STB PLAY is software for connecting to compatible portals and playing content that the user is authorised to access. STB PLAY does not provide, host, sell, select or distribute TV channels, movies, series, playlists, portals, subscriptions, accounts or login details.</p>
+          <ul><li>You are responsible for using portal details and media access you are legally authorised to use.</li><li>Any subscription, channel availability, stream quality and service support are handled by the relevant third-party provider.</li><li>STB PLAY is independent and is not affiliated with or endorsed by third-party portal providers, content owners, device brands or platforms.</li><li>Device and feature compatibility may differ by model, operating system and provider setup.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="wrap">
+        <div class="section-head"><div class="section-kicker">Quick answers</div><h2>Need to know</h2></div>
+        <div class="faq-grid">
+          <details><summary>Is STB PLAY free?</summary><p>Yes. The app is free to download. STB PLAY does not charge for a membership, key or activation.</p></details>
+          <details><summary>Does the app come with channels or movies?</summary><p>No. STB PLAY does not provide media, channels, playlists or portal access. Add a compatible portal and use content you are authorised to access.</p></details>
+          <details><summary>Which Android devices can I try?</summary><p>The Android APK is intended for compatible phones, tablets, Android TV devices and TV boxes. Fire TV, Firestick and Meta Quest installation may need extra steps, and compatibility can vary.</p></details>
+          <details><summary>Where do I enter the Downloader code?</summary><p>Open the Downloader app on a supported TV device and enter <strong>6068753</strong>. Then follow the prompts shown in the app.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer><div class="wrap footer-row"><div class="footer-brand"><img src="assets/logos/stb-play-blue.webp" alt=""><span>STB PLAY</span></div><span>Free player software · Use only with authorised portal access.</span><a href="#home">Back to top ↑</a></div></footer>
+  <div class="modal" id="image-modal" role="dialog" aria-modal="true" aria-label="Screenshot enlarged"><button class="modal-close" type="button" aria-label="Close image">×</button><img src="" alt=""></div>
+  <script>
+    const menuButton=document.querySelector('.menu-toggle');
+    const nav=document.querySelector('#navlinks');
+    menuButton.addEventListener('click',()=>{const open=nav.classList.toggle('open');menuButton.setAttribute('aria-expanded',String(open));});
+    nav.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{nav.classList.remove('open');menuButton.setAttribute('aria-expanded','false');}));
+    const modal=document.querySelector('#image-modal');
+    const modalImage=modal.querySelector('img');
+    const closeModal=()=>{modal.classList.remove('open');modalImage.src='';};
+    document.querySelectorAll('.shot').forEach(button=>button.addEventListener('click',()=>{const image=button.querySelector('img');modalImage.src=button.dataset.image;modalImage.alt=image.alt;modal.classList.add('open');modal.querySelector('.modal-close').focus();}));
+    modal.querySelector('.modal-close').addEventListener('click',closeModal);
+    modal.addEventListener('click',event=>{if(event.target===modal)closeModal();});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape')closeModal();});
+    document.querySelector('#copy-code').addEventListener('click',async event=>{const button=event.currentTarget;try{await navigator.clipboard.writeText(document.querySelector('#downloader-code').textContent.trim());button.textContent='Copied';setTimeout(()=>button.textContent='Copy code',1600);}catch{button.textContent='Code: 6068753';setTimeout(()=>button.textContent='Copy code',2000);}});
+  </script>
+</body>
+</html>
